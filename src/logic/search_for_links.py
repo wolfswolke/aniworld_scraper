@@ -1,4 +1,3 @@
-import requests as requests
 from bs4 import BeautifulSoup
 import urllib.request
 
@@ -38,10 +37,4 @@ def vidoza_to_cache(vidoza_url):
     soup = BeautifulSoup(html_page, features="html.parser")
     for link in soup.findAll('source'):
         cache_link = str(link.get("src"))
-        return(cache_link)
-
-
-def test(aniworld_link):
-    r = requests.get(aniworld_link, headers={
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
-    print(r.url)
+        return cache_link
