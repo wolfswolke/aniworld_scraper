@@ -6,3 +6,4 @@
 *.log
 *__pycache__
 /temp/*
+/src/logic/bypass_captcha.py
