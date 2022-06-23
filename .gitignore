@@ -1,0 +1,8 @@
+/config/
+/test/
+/.idea/
+/logs/
+*.zip
+*.log
+*__pycache__
+/temp/*
