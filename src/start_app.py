@@ -14,14 +14,15 @@ for season in range(int(seasons)):
     season = season + 1
     episode_count = get_episodes(season, anime_name)
     print("Season {} has {} Episodes.".format(season, episode_count))
+    for episode in range(int(episode_count)):
+        episode = episode + 1
+        link = anime_url + "staffel-{}/episode-{}".format(season, episode)
+        link_to_redirect = aniworld_to_redirect(link)
 
-result = aniworld_to_redirect("https://aniworld.to/anime/stream/the-misfit-of-demon-king-academy/staffel-1/episode-11")
-print(result)
+        # PLACE HOLDER FOR REDIRECT TO VIDOZA
+        # vidoza_link = redirect_to_vidoza(result)
+        # print(vidoza_link)
 
-# vidoza_link = redirect_to_vidoza(result)
-# print(vidoza_link)
-cache = vidoza_to_cache("https://vidoza.net/embed-y87qfjmgagf1.html")
-print(cache)
-
-print("testing_grounds")
-
+        test_vidoza_link = "https://vidoza.net/embed-y87qfjmgagf1.html"
+        cache = vidoza_to_cache(test_vidoza_link)
+        print(cache)
