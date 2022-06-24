@@ -23,5 +23,4 @@ def get_episodes(season_count, anime_name):
         episode = str(link.get("href"))
         if "/anime/stream/{}/staffel-{}/episode-{}".format(anime_name, season_count, episode_count) in episode:
             episode_count = episode_count + 1
-    print(episode_count - 1)
     return episode_count - 1
