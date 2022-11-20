@@ -1,21 +1,23 @@
-#Aniworld.to scraper
-This is a in work Project.
-THIS IS NOT FINISHED YET!!!
-<br />
-Purpose:
-<br />
-- This Software will take a aniworld.to URL and give you the URL of all the Episodes mp4 files.
-<br />
 
-Example:
-- Input: https://aniworld.to/anime/stream/AnimeName/
-- Output: 
-  - S1E1: https://cache58.vidoza.net/RandomRandom/v.mp4
-  - S2E2: https://cache58.vidoza.net/Random2Random2/v.mp4
-  - ...........
-<br />
-<br />
+# AnirworldScraper
 
-TO DO:
-- Download the mp4s and name them correctly.
-- Workaround the redirect of aniworld.to
+Scraper for the Anime Hoster Aniworld. 
+
+This tool will download all Seasons and Episodes of an anime from Aniworld.to
+
+
+How to use:
+* Clone the Repo
+* pip install requirements.txt
+* Change anime_name in start_app to your anime name (Format = see URL of the anime)
+* INFO: GUtils is a self writen library. I used it here as a Logging handler. If you dont trust me remove all logger.X and replace them with print. 
+
+## Feedback
+
+* Discord: ZKWolf#1926 
+* Mail: zkwolf@zkwolf.com
+
+
+## Support
+
+Please create a Issue.
