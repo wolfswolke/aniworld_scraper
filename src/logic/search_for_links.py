@@ -1,5 +1,25 @@
+"""
+
+"""
+# ------------------------------------------------------- #
+#                     imports
+# ------------------------------------------------------- #
 from bs4 import BeautifulSoup
 import urllib.request
+from gutils.logging_handle import logger
+
+# ------------------------------------------------------- #
+#                   definitions
+# ------------------------------------------------------- #
+MODULE_LOGGER_HEAD = "search_for_links ->"
+
+# ------------------------------------------------------- #
+#                   global variables
+# ------------------------------------------------------- #
+
+# ------------------------------------------------------- #
+#                      functions
+# ------------------------------------------------------- #
 
 
 def aniworld_to_redirect(aniworld_link):
@@ -15,26 +35,21 @@ def aniworld_to_redirect(aniworld_link):
                 return redirecting_link
 
 
-def redirect_to_vidoza(aniworld_link):
-    # cant get past redirect
-    counter = 0
-    html_page = urllib.request.urlopen(aniworld_link)
-    print(html_page)
-    soup = BeautifulSoup(html_page, features="html.parser")
-    for link in soup.findAll('a'):
-        print(link)
-        redirect_to_cache = str(link.get("video"))
-        print(redirect_to_cache)
-        if "/redirect/" in redirect_to_cache:
-            counter = counter + 1
-            if counter == 10000000:
-                redirecting_link = "https://aniworld.to" + redirect_to_cache
-                return redirecting_link
-
-
 def vidoza_to_cache(vidoza_url):
+    logger.debug(MODULE_LOGGER_HEAD + "Enterd Vidoza to cache")
     html_page = urllib.request.urlopen(vidoza_url)
     soup = BeautifulSoup(html_page, features="html.parser")
     for link in soup.findAll('source'):
         cache_link = str(link.get("src"))
+        logger.debug(MODULE_LOGGER_HEAD + "Exiting Vidoza to Cache")
         return cache_link
+
+# ------------------------------------------------------- #
+#                      classes
+# ------------------------------------------------------- #
+
+
+# ------------------------------------------------------- #
+#                       main
+# ------------------------------------------------------- #
+
