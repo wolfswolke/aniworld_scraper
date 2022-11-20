@@ -43,6 +43,7 @@ def setup_logging(debug_level):
 #                       main
 # ------------------------------------------------------- #
 if __name__ == "__main__":
+    setup_logging("debug")
     try:
         logger.info("------------- AniWorldScraper {} started ------------".format(APP_VERSION))
 
@@ -57,7 +58,7 @@ if __name__ == "__main__":
                 link = anime_url + "staffel-{}/episode-{}".format(season, episode)
                 link_to_redirect = aniworld_to_redirect(link)
 
-                # PLACE HOLDER FOR REDIRECT TO VIDOZA
+                logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is" + link_to_redirect)
                 # vidoza_link = redirect_to_vidoza(link_to_redirect)
 
                 # WORKING
