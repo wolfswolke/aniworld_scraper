@@ -1,8 +1,30 @@
+"""
+
+"""
+# ------------------------------------------------------- #
+#                     imports
+# ------------------------------------------------------- #
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from threading import Thread
+
+
+# ------------------------------------------------------- #
+#                   definitions
+# ------------------------------------------------------- #
+###################################################################
+# Thank you @Michtdu for helping me with this Captcha Workaround. #
+###################################################################
+
+# ------------------------------------------------------- #
+#                   global variables
+# ------------------------------------------------------- #
+
+# ------------------------------------------------------- #
+#                      functions
+# ------------------------------------------------------- #
 
 
 def open_captcha_window(full_url):
@@ -23,3 +45,12 @@ def open_captcha_window(full_url):
 
 def threaded_driver_close(driver):
     driver.close()
+
+# ------------------------------------------------------- #
+#                      classes
+# ------------------------------------------------------- #
+
+
+# ------------------------------------------------------- #
+#                       main
+# ------------------------------------------------------- #
