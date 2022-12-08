@@ -30,7 +30,7 @@ def aniworld_to_redirect(aniworld_link):
         redirect_to_aniworld = str(link.get("href"))
         if "/redirect/" in redirect_to_aniworld:
             counter = counter + 1
-            if counter == 4:
+            if counter == 3:
                 redirecting_link = "https://aniworld.to" + redirect_to_aniworld
                 return redirecting_link
 
