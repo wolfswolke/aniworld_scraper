@@ -1,10 +1,14 @@
 """
 
 """
+import time
+
 # ------------------------------------------------------- #
 #                     imports
 # ------------------------------------------------------- #
 from gutils.logging_handle import logger
+
+import os
 
 from logic.search_for_links import aniworld_to_redirect
 from logic.search_for_links import vidoza_to_cache
@@ -46,6 +50,17 @@ if __name__ == "__main__":
     setup_logging("info")
     try:
         logger.info("------------- AniWorldScraper {} started ------------".format(APP_VERSION))
+
+        read_check = os.access('DO_NOT_DELETE.txt', os.R_OK)
+        if read_check:
+            logger.debug("We have Read Permission")
+        else:
+            logger.debug("No Read Access")
+        write_check = os.access('DO_NOT_DELETE.txt', os.W_OK)
+        if write_check:
+            logger.debug("We have Write Permission")
+        else:
+            logger.debug("No Write Permission")
 
         seasons = get_season(anime_name)
         logger.info(MODULE_LOGGER_HEAD + "We have this many seasons: {}".format(seasons))
