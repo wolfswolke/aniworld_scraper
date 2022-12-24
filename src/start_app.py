@@ -45,7 +45,7 @@ def setup_logging(debug_level):
 #                       main
 # ------------------------------------------------------- #
 if __name__ == "__main__":
-    setup_logging("info")
+    setup_logging("debug")
     try:
         logger.info("------------- AniWorldScraper {} started ------------".format(APP_VERSION))
 
@@ -53,12 +53,14 @@ if __name__ == "__main__":
         if read_check:
             logger.debug("We have Read Permission")
         else:
-            logger.debug("No Read Access")
+            logger.error("No Read Permission. Please check if you own the Folder and/or have permissions to read.")
+            exit()
         write_check = os.access('DO_NOT_DELETE.txt', os.W_OK)
         if write_check:
             logger.debug("We have Write Permission")
         else:
-            logger.debug("No Write Permission")
+            logger.error("No Write Permission. Please check if you own the Folder and/or have permissions to write.")
+            exit()
 
         seasons = get_season(anime_name)
         logger.info(MODULE_LOGGER_HEAD + "We have this many seasons: {}".format(seasons))
