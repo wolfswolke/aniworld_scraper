@@ -26,6 +26,7 @@ MODULE_LOGGER_HEAD = "start_app -> "
 # ------------------------------------------------------- #
 anime_name = "the-rising-of-the-shield-hero"
 anime_url = "https://aniworld.to/anime/stream/{}/".format(anime_name)
+season_override = 0  # 0 = no override. 1 = season 1. etc...
 
 
 # ------------------------------------------------------- #
@@ -45,7 +46,7 @@ def setup_logging(debug_level):
 #                       main
 # ------------------------------------------------------- #
 if __name__ == "__main__":
-    setup_logging("debug")
+    setup_logging("info")
     try:
         logger.info("------------- AniWorldScraper {} started ------------".format(APP_VERSION))
 
@@ -62,15 +63,31 @@ if __name__ == "__main__":
             logger.error("No Write Permission. Please check if you own the Folder and/or have permissions to write.")
             exit()
 
-        seasons = get_season(anime_name)
-        logger.info(MODULE_LOGGER_HEAD + "We have this many seasons: {}".format(seasons))
+        if season_override == 0:
+            logger.info(MODULE_LOGGER_HEAD + "No Season override detected.")
+            seasons = get_season(anime_name)
+            logger.info(MODULE_LOGGER_HEAD + "We have this many seasons: {}".format(seasons))
+        else:
+            logger.info(MODULE_LOGGER_HEAD + "Season Override detected. Override set to: {}".format(season_override))
+            seasons = 1
+
         for season in range(int(seasons)):
             season = season + 1
-            episode_count = get_episodes(season, anime_name)
-            logger.info(MODULE_LOGGER_HEAD + "Season {} has {} Episodes.".format(season, episode_count))
+            if season_override == 0:
+                episode_count = get_episodes(season, anime_name)
+                logger.info(MODULE_LOGGER_HEAD + "Season {} has {} Episodes.".format(season, episode_count))
+            else:
+                episode_count = get_episodes(season_override, anime_name)
+                logger.info(MODULE_LOGGER_HEAD + "Season {} has {} Episodes.".format(season_override, episode_count))
+
             for episode in range(int(episode_count)):
                 episode = episode + 1
-                link = anime_url + "staffel-{}/episode-{}".format(season, episode)
+
+                if season_override == 0:
+                    link = anime_url + "staffel-{}/episode-{}".format(season, episode)
+                else:
+                    link = anime_url + "staffel-{}/episode-{}".format(season_override, episode)
+
                 link_to_redirect = aniworld_to_redirect(link)
 
                 logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
@@ -78,7 +95,10 @@ if __name__ == "__main__":
                 logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
                 vidoza_cache_url = vidoza_to_cache(captcha_link)
                 logger.debug(MODULE_LOGGER_HEAD + "Vidoza Cache URL is: " + vidoza_cache_url)
-                file_name = "S{}-E{}-{}.mp4".format(season, episode, anime_name)
+                if season_override == 0:
+                    file_name = "S{}-E{}-{}.mp4".format(season, episode, anime_name)
+                else:
+                    file_name = "S{}-E{}-{}.mp4".format(season_override, episode, anime_name)
                 logger.info(MODULE_LOGGER_HEAD + "File name will be: " + file_name)
                 downloader(vidoza_cache_url, file_name)
     except Exception as e:
