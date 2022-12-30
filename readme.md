@@ -12,7 +12,7 @@ How to use:
 * INFO: GUtils is a self writen library. I used it here as a Logging handler. If you don't trust me remove all logger.X
 and replace them with print. 
 * If you now start the start_app.py a small Chrome window will open everytime it finds an Episode. This is for the Google Captcha!
-* If the Captcha operas please solve it. If you close the window you have to restart the application.
+* If the Captcha appears please solve it. If you close the window you have to restart the application.
 
 ## Overrides
 * season_override: Specify which season to Download. 0 is the Default and will download all Seasons.
