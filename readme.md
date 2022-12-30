@@ -14,9 +14,13 @@ and replace them with print.
 * If you now start the start_app.py a small Chrome window will open everytime it finds an Episode. This is for the Google Captcha!
 * If the Captcha appears please solve it. If you close the window you have to restart the application.
 
-## Overrides
+## Values/Overrides
+* anime_name: Enter the anime you want to download. It has to be in the naming scheme aniworld uses so word-word.
+* anime_url: No need to change this. If you do everything will break.
 * season_override: Specify which season to Download. 0 is the Default and will download all Seasons.
 * ddos_protection_calc: How many episodes to download before waiting 60 seconds. Default 5.
+* ddos_wait_timer: How long to wait until next download batch starts. Default 60.
+* ddos_start_value: No need to change this. This is just the Start Value for the DDOS wait loop.
 
 ## Feedback
 * Discord: ZKWolf#1926 
