@@ -20,16 +20,18 @@ from logic.captcha import open_captcha_window
 # ------------------------------------------------------- #
 #                   definitions
 # ------------------------------------------------------- #
-APP_VERSION = "v01-00-05"
+APP_VERSION = "v01-01-00"
 MODULE_LOGGER_HEAD = "start_app -> "
 
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-anime_name = "lees-detective-agency"
+anime_name = "Anime-Name-Goes-Here"
 anime_url = "https://aniworld.to/anime/stream/{}/".format(anime_name)
 season_override = 0  # 0 = no override. 1 = season 1. etc...
-ddos_protection_calc = 0
+ddos_protection_calc = 5
+ddos_wait_timer = 60
+ddos_start_value = 0
 
 
 # ------------------------------------------------------- #
@@ -103,15 +105,15 @@ if __name__ == "__main__":
                 else:
                     file_name = "S{}-E{}-{}.mp4".format(season_override, episode, anime_name)
                 logger.info(MODULE_LOGGER_HEAD + "File name will be: " + file_name)
-                if ddos_protection_calc < 4:
+                if ddos_start_value < ddos_protection_calc:
                     logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
-                    ddos_protection_calc = ddos_protection_calc + 1
+                    ddos_start_value = ddos_start_value + 1
                     create_new_download_thread(vidoza_cache_url, file_name)
                 else:
-                    logger.info(MODULE_LOGGER_HEAD + "Started 5 Downloads. Waiting for 60 Seconds to not trigger DDOS "
-                                                     "Protection.")
-                    time.sleep(60)
-                    ddos_protection_calc = 0
+                    logger.info(MODULE_LOGGER_HEAD + "Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
+                                                     "Protection.".format(ddos_protection_calc, ddos_wait_timer))
+                    time.sleep(ddos_wait_timer)
+                    ddos_start_value = 1
 
     except Exception as e:
         logger.error(MODULE_LOGGER_HEAD + "----------")
