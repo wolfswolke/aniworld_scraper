@@ -11,8 +11,12 @@ How to use:
 * Change anime_name in start_app to your anime name (Format -> see URL of the anime)
 * INFO: GUtils is a self writen library. I used it here as a Logging handler. If you don't trust me remove all logger.X
 and replace them with print. 
-* If you now start the start_app.py a small chrome window will open everytime it finds a Episode. This is for the Google Captcha!
-* If the Captcha aperas please solve it. If you close the window you have to restart the application.
+* If you now start the start_app.py a small Chrome window will open everytime it finds an Episode. This is for the Google Captcha!
+* If the Captcha operas please solve it. If you close the window you have to restart the application.
+
+## Overrides
+* season_override: Specify which season to Download. 0 is the Default and will download all Seasons.
+* ddos_protection_calc: How many episodes to download before waiting 60 seconds. Default 5.
 
 ## Feedback
 * Discord: ZKWolf#1926 
