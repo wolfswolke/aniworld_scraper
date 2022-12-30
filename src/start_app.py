@@ -7,12 +7,14 @@
 from gutils.logging_handle import logger
 
 import os
+import time
 
 from logic.search_for_links import aniworld_to_redirect
 from logic.search_for_links import vidoza_to_cache
 from logic.collect_all_seasons_and_episods import get_season
 from logic.collect_all_seasons_and_episods import get_episodes
 from logic.downloader import downloader
+from logic.downloader import create_new_download_thread
 from logic.captcha import open_captcha_window
 
 # ------------------------------------------------------- #
@@ -24,9 +26,10 @@ MODULE_LOGGER_HEAD = "start_app -> "
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-anime_name = "the-rising-of-the-shield-hero"
+anime_name = "lees-detective-agency"
 anime_url = "https://aniworld.to/anime/stream/{}/".format(anime_name)
 season_override = 0  # 0 = no override. 1 = season 1. etc...
+ddos_protection_calc = 0
 
 
 # ------------------------------------------------------- #
@@ -100,7 +103,16 @@ if __name__ == "__main__":
                 else:
                     file_name = "S{}-E{}-{}.mp4".format(season_override, episode, anime_name)
                 logger.info(MODULE_LOGGER_HEAD + "File name will be: " + file_name)
-                downloader(vidoza_cache_url, file_name)
+                if ddos_protection_calc < 4:
+                    logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
+                    ddos_protection_calc = ddos_protection_calc + 1
+                    create_new_download_thread(vidoza_cache_url, file_name)
+                else:
+                    logger.info(MODULE_LOGGER_HEAD + "Started 5 Downloads. Waiting for 60 Seconds to not trigger DDOS "
+                                                     "Protection.")
+                    time.sleep(60)
+                    ddos_protection_calc = 0
+
     except Exception as e:
         logger.error(MODULE_LOGGER_HEAD + "----------")
         logger.error(MODULE_LOGGER_HEAD + f"Exception: {e}")
