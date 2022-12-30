@@ -113,6 +113,7 @@ if __name__ == "__main__":
                     logger.info(MODULE_LOGGER_HEAD + "Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
                                                      "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                     time.sleep(ddos_wait_timer)
+                    create_new_download_thread(vidoza_cache_url, file_name)
                     ddos_start_value = 1
 
     except Exception as e:
