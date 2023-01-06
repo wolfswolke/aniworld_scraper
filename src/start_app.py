@@ -13,7 +13,6 @@ from logic.search_for_links import aniworld_to_redirect
 from logic.search_for_links import vidoza_to_cache
 from logic.collect_all_seasons_and_episods import get_season
 from logic.collect_all_seasons_and_episods import get_episodes
-from logic.downloader import downloader
 from logic.downloader import create_new_download_thread
 from logic.captcha import open_captcha_window
 
@@ -66,6 +65,10 @@ if __name__ == "__main__":
             logger.debug("We have Write Permission")
         else:
             logger.error("No Write Permission. Please check if you own the Folder and/or have permissions to write.")
+            exit()
+
+        if anime_name == "Anime-Name-Goes-Here":
+            logger.error(MODULE_LOGGER_HEAD + "Anime Name is Default. Please reade readme before starting.")
             exit()
 
         if season_override == 0:
@@ -125,3 +128,5 @@ if __name__ == "__main__":
         logger.info("-----------------------------------------------------------")
         logger.info("            AniWorldScraper Stopped")
         logger.info("-----------------------------------------------------------")
+        logger.info("Downloads may still be running. Please dont close this Window until its done.")
+        logger.info("You will know its done once you see your primary prompt string. Example: C:\\XXX or username@hostname:")
