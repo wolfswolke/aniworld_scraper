@@ -31,6 +31,7 @@ def open_captcha_window(full_url):
     options = webdriver.ChromeOptions()
     options.add_argument("app=" + full_url)
     options.add_argument("window-size=423,705")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get(full_url)
