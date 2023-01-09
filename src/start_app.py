@@ -31,6 +31,8 @@ season_override = 0  # 0 = no override. 1 = season 1. etc...
 ddos_protection_calc = 5
 ddos_wait_timer = 60
 ddos_start_value = 0
+output_path = "output"
+wanted_substring = "vidoza.net"
 
 
 # ------------------------------------------------------- #
@@ -40,6 +42,22 @@ def setup_logging(debug_level):
     logger.set_logging_level(debug_level)
     logger.set_cmd_line_logging_output()
     logger.add_global_except_hook()
+
+
+def button_failsave(internal_link):
+    link_to_redirect = aniworld_to_redirect(internal_link, button=3)
+    logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
+    internal_captcha_link = open_captcha_window(link_to_redirect)
+    logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
+    if wanted_substring in internal_captcha_link:
+        return internal_captcha_link
+    else:
+        link_to_redirect = aniworld_to_redirect(internal_link, button=2)
+        logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
+        internal_captcha_link = open_captcha_window(link_to_redirect)
+        logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
+        return internal_captcha_link
+
 
 # ------------------------------------------------------- #
 #                      classes
@@ -56,16 +74,24 @@ if __name__ == "__main__":
 
         read_check = os.access('DO_NOT_DELETE.txt', os.R_OK)
         if read_check:
-            logger.debug("We have Read Permission")
+            logger.debug(MODULE_LOGGER_HEAD + "We have Read Permission")
         else:
-            logger.error("No Read Permission. Please check if you own the Folder and/or have permissions to read.")
+            logger.error(MODULE_LOGGER_HEAD + "No Read Permission. Please check if you own the Folder and/or have "
+                                              "permissions to read.")
             exit()
         write_check = os.access('DO_NOT_DELETE.txt', os.W_OK)
         if write_check:
-            logger.debug("We have Write Permission")
+            logger.debug(MODULE_LOGGER_HEAD + "We have Write Permission")
         else:
-            logger.error("No Write Permission. Please check if you own the Folder and/or have permissions to write.")
+            logger.error(MODULE_LOGGER_HEAD + "No Write Permission. Please check if you own the Folder and/or have "
+                                              "permissions to write.")
             exit()
+
+        if os.path.exists(output_path):
+            logger.debug(MODULE_LOGGER_HEAD + "Output Path exists.")
+        else:
+            logger.info(MODULE_LOGGER_HEAD + "Output path does not exist. Creating now...")
+            os.mkdir(output_path)
 
         if anime_name == "Anime-Name-Goes-Here":
             logger.error(MODULE_LOGGER_HEAD + "Anime Name is Default. Please reade readme before starting.")
@@ -96,17 +122,13 @@ if __name__ == "__main__":
                 else:
                     link = anime_url + "staffel-{}/episode-{}".format(season_override, episode)
 
-                link_to_redirect = aniworld_to_redirect(link)
-
-                logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
-                captcha_link = open_captcha_window(link_to_redirect)
-                logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
+                captcha_link = button_failsave(link)
                 vidoza_cache_url = vidoza_to_cache(captcha_link)
                 logger.debug(MODULE_LOGGER_HEAD + "Vidoza Cache URL is: " + vidoza_cache_url)
                 if season_override == 0:
-                    file_name = "S{}-E{}-{}.mp4".format(season, episode, anime_name)
+                    file_name = "{}/S{}-E{}-{}.mp4".format(output_path, season, episode, anime_name)
                 else:
-                    file_name = "S{}-E{}-{}.mp4".format(season_override, episode, anime_name)
+                    file_name = "{}/S{}-E{}-{}.mp4".format(output_path, season_override, episode, anime_name)
                 logger.info(MODULE_LOGGER_HEAD + "File name will be: " + file_name)
                 if ddos_start_value < ddos_protection_calc:
                     logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
@@ -129,4 +151,5 @@ if __name__ == "__main__":
         logger.info("            AniWorldScraper Stopped")
         logger.info("-----------------------------------------------------------")
         logger.info("Downloads may still be running. Please dont close this Window until its done.")
-        logger.info("You will know its done once you see your primary prompt string. Example: C:\\XXX or username@hostname:")
+        logger.info(
+            "You will know its done once you see your primary prompt string. Example: C:\\XXX or username@hostname:")
