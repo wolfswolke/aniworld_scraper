@@ -10,6 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from threading import Thread
 
+import os
 
 # ------------------------------------------------------- #
 #                   definitions
@@ -28,10 +29,14 @@ from threading import Thread
 
 
 def open_captcha_window(full_url):
+    working_dir = os.getcwd()
+    path_to_ublock = r'{}\extensions\ublock'.format(working_dir)
     options = webdriver.ChromeOptions()
     options.add_argument("app=" + full_url)
     options.add_argument("window-size=423,705")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    if os.path.exists(path_to_ublock):
+        options.add_argument('load-extension=' + path_to_ublock)
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get(full_url)

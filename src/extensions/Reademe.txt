@@ -1,0 +1,7 @@
+If you want to use ublock to make downloads more consistent and not randomly fail
+download ublock from GitHub and put the content in a folder here called "ublock".
+It should look like this: src/extensions/ublock/_locals......
+
+Ublock: https://github.com/gorhill/uBlock
+DO NOT USE UBLOCK LITE!
+The reason is that Ublock Lite always opens a config pop up that cant be removed...
