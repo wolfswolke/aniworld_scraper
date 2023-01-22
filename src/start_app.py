@@ -31,7 +31,7 @@ season_override = 0  # 0 = no override. 1 = season 1. etc...
 ddos_protection_calc = 5
 ddos_wait_timer = 60
 ddos_start_value = 0
-output_path = "output"
+output_path = anime_name
 wanted_substring = "vidoza.net"
 
 
