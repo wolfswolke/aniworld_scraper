@@ -8,6 +8,7 @@ from gutils.logging_handle import logger
 
 import os
 import time
+import sys
 
 from logic.search_for_links import aniworld_to_redirect
 from logic.search_for_links import vidoza_to_cache
@@ -44,6 +45,27 @@ def setup_logging(debug_level):
     logger.add_global_except_hook()
 
 
+def setup_arguments():
+    if len(sys.argv) < 2:
+        logger.info(MODULE_LOGGER_HEAD + "Usage: start_app.py Anime_name [Season_overrider]")
+        sys.exit()
+
+    global anime_name
+    anime_name = sys.argv[1]
+    global anime_url
+    anime_url = "https://aniworld.to/anime/stream/{}/".format(sys.argv[1])
+    global output_path
+    output_path = sys.argv[1]
+
+
+    if len(sys.argv) == 3:
+        global season_override
+        season_override = int(sys.argv[2])
+        logger.debug(MODULE_LOGGER_HEAD + "Season Override detected. Val: {}".format(season_override))
+    else:
+        logger.debug(MODULE_LOGGER_HEAD + "No Season Override.")
+
+
 def button_failsave(internal_link):
     link_to_redirect = aniworld_to_redirect(internal_link, button=3)
     logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
@@ -68,7 +90,9 @@ def button_failsave(internal_link):
 #                       main
 # ------------------------------------------------------- #
 if __name__ == "__main__":
-    setup_logging("info")
+    setup_logging("debug")
+    if anime_name == "Anime-Name-Goes-Here":
+        setup_arguments()
     try:
         logger.info("------------- AniWorldScraper {} started ------------".format(APP_VERSION))
 
