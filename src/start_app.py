@@ -4,7 +4,7 @@
 # ------------------------------------------------------- #
 #                     imports
 # ------------------------------------------------------- #
-from gutils.logging_handle import logger
+from zk_tools.logging_handle import logger
 
 import os
 import time
