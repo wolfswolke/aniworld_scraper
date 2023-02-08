@@ -90,7 +90,7 @@ def button_failsave(internal_link):
 #                       main
 # ------------------------------------------------------- #
 if __name__ == "__main__":
-    setup_logging("debug")
+    setup_logging("info")
     if anime_name == "Anime-Name-Goes-Here":
         setup_arguments()
     try:
