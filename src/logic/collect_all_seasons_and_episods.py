@@ -7,7 +7,7 @@
 from bs4 import BeautifulSoup
 import urllib.request
 
-from gutils.logging_handle import logger
+from zk_tools.logging_handle import logger
 
 # ------------------------------------------------------- #
 #                   definitions
