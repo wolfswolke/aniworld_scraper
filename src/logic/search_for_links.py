@@ -42,7 +42,7 @@ def vidoza_to_cache(vidoza_url, provider):
         cache_link = soup.find("source").get("src")
     elif provider == "VOE":
         cache_link = VOE_PATTERN.search(html_page.read().decode('utf-8')).group("url")
-        logger.debug(MODULE_LOGGER_HEAD + "Exiting {} to Cache".format(provider))
+    logger.debug(MODULE_LOGGER_HEAD + "Exiting {} to Cache".format(provider))
     return cache_link
 
 # ------------------------------------------------------- #
