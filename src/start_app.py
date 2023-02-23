@@ -33,7 +33,6 @@ ddos_protection_calc = 5
 ddos_wait_timer = 60
 ddos_start_value = 0
 output_path = anime_name
-wanted_substring = "vidoza.net"
 
 
 # ------------------------------------------------------- #
@@ -67,18 +66,18 @@ def setup_arguments():
 
 
 def button_failsave(internal_link):
-    link_to_redirect = aniworld_to_redirect(internal_link, button=3)
+    link_to_redirect, provider = aniworld_to_redirect(internal_link, button="VOE")
     logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
     internal_captcha_link = open_captcha_window(link_to_redirect)
     logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
-    if wanted_substring in internal_captcha_link:
-        return internal_captcha_link
+    if internal_captcha_link:
+        return internal_captcha_link, provider
     else:
-        link_to_redirect = aniworld_to_redirect(internal_link, button=2)
+        link_to_redirect, provider = aniworld_to_redirect(internal_link, button="Vidoza")
         logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
         internal_captcha_link = open_captcha_window(link_to_redirect)
         logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
-        return internal_captcha_link
+        return internal_captcha_link, provider
 
 
 # ------------------------------------------------------- #
@@ -146,9 +145,9 @@ if __name__ == "__main__":
                 else:
                     link = anime_url + "staffel-{}/episode-{}".format(season_override, episode)
 
-                captcha_link = button_failsave(link)
-                vidoza_cache_url = vidoza_to_cache(captcha_link)
-                logger.debug(MODULE_LOGGER_HEAD + "Vidoza Cache URL is: " + vidoza_cache_url)
+                captcha_link, provider = button_failsave(link)
+                vidoza_cache_url = vidoza_to_cache(captcha_link, provider)
+                logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + vidoza_cache_url)
                 if season_override == 0:
                     file_name = "{}/S{}-E{}-{}.mp4".format(output_path, season, episode, anime_name)
                 else:
