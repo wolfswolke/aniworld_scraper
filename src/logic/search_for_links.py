@@ -34,9 +34,9 @@ def aniworld_to_redirect(aniworld_link, button):
             return redirecting_link, provider_name
 
 
-def vidoza_to_cache(vidoza_url, provider):
+def find_cache_url(url, provider):
     logger.debug(MODULE_LOGGER_HEAD + "Enterd {} to cache".format(provider))
-    html_page = urllib.request.urlopen(vidoza_url)
+    html_page = urllib.request.urlopen(url)
     if provider == "Vidoza":
         soup = BeautifulSoup(html_page, features="html.parser")
         cache_link = soup.find("source").get("src")

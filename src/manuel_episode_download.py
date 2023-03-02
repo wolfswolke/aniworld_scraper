@@ -3,7 +3,7 @@ from zk_tools.logging_handle import logger
 import os
 
 from logic.search_for_links import aniworld_to_redirect
-from logic.search_for_links import vidoza_to_cache
+from logic.search_for_links import find_cache_url
 from logic.downloader import create_new_download_thread
 from logic.captcha import open_captcha_window
 
@@ -39,7 +39,7 @@ link_to_redirect, provider = aniworld_to_redirect(link, button="Vidoza")
 logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
 captcha_link = open_captcha_window(link_to_redirect)
 logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
-vidoza_cache_url = vidoza_to_cache(captcha_link, provider)
+vidoza_cache_url = find_cache_url(captcha_link, provider)
 logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + vidoza_cache_url)
 file_name = "output/S{}-E{}-{}.mp4".format(season, episode, anime_name)
 create_new_download_thread(vidoza_cache_url, file_name)

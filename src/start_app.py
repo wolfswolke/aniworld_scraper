@@ -11,7 +11,7 @@ import time
 import sys
 
 from logic.search_for_links import aniworld_to_redirect
-from logic.search_for_links import vidoza_to_cache
+from logic.search_for_links import find_cache_url
 from logic.collect_all_seasons_and_episods import get_season
 from logic.collect_all_seasons_and_episods import get_episodes
 from logic.downloader import create_new_download_thread
@@ -55,7 +55,6 @@ def setup_arguments():
     anime_url = "https://aniworld.to/anime/stream/{}/".format(sys.argv[1])
     global output_path
     output_path = sys.argv[1]
-
 
     if len(sys.argv) == 3:
         global season_override
@@ -146,8 +145,8 @@ if __name__ == "__main__":
                     link = anime_url + "staffel-{}/episode-{}".format(season_override, episode)
 
                 captcha_link, provider = button_failsave(link)
-                vidoza_cache_url = vidoza_to_cache(captcha_link, provider)
-                logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + vidoza_cache_url)
+                cache_url = find_cache_url(captcha_link, provider)
+                logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + cache_url)
                 if season_override == 0:
                     file_name = "{}/S{}-E{}-{}.mp4".format(output_path, season, episode, anime_name)
                 else:
@@ -156,12 +155,12 @@ if __name__ == "__main__":
                 if ddos_start_value < ddos_protection_calc:
                     logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
                     ddos_start_value = ddos_start_value + 1
-                    create_new_download_thread(vidoza_cache_url, file_name)
+                    create_new_download_thread(cache_url, file_name)
                 else:
                     logger.info(MODULE_LOGGER_HEAD + "Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
                                                      "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                     time.sleep(ddos_wait_timer)
-                    create_new_download_thread(vidoza_cache_url, file_name)
+                    create_new_download_thread(cache_url, file_name)
                     ddos_start_value = 1
 
     except Exception as e:
