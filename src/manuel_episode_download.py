@@ -1,4 +1,4 @@
-from gutils.logging_handle import logger
+from zk_tools.logging_handle import logger
 
 import os
 
@@ -35,11 +35,11 @@ else:
     exit()
 
 link = anime_url + "staffel-{}/episode-{}".format(season, episode)
-link_to_redirect = aniworld_to_redirect(link)
+link_to_redirect, provider = aniworld_to_redirect(link, button="Vidoza")
 logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
 captcha_link = open_captcha_window(link_to_redirect)
 logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
-vidoza_cache_url = vidoza_to_cache(captcha_link)
-logger.debug(MODULE_LOGGER_HEAD + "Vidoza Cache URL is: " + vidoza_cache_url)
+vidoza_cache_url = vidoza_to_cache(captcha_link, provider)
+logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + vidoza_cache_url)
 file_name = "output/S{}-E{}-{}.mp4".format(season, episode, anime_name)
 create_new_download_thread(vidoza_cache_url, file_name)

@@ -4,6 +4,7 @@
 # ------------------------------------------------------- #
 #                     imports
 # ------------------------------------------------------- #
+import re
 from bs4 import BeautifulSoup
 import urllib.request
 from zk_tools.logging_handle import logger
@@ -16,33 +17,33 @@ MODULE_LOGGER_HEAD = "search_for_links ->"
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
+VOE_PATTERN = re.compile(r"'mp4': '(?P<url>.+)'")
 
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
 
 
-def aniworld_to_redirect(aniworld_link, button=3):
-    counter = 0
+def aniworld_to_redirect(aniworld_link, button):
     html_page = urllib.request.urlopen(aniworld_link)
     soup = BeautifulSoup(html_page, features="html.parser")
-    for link in soup.findAll('a'):
-        redirect_to_aniworld = str(link.get("href"))
-        if "/redirect/" in redirect_to_aniworld:
-            counter = counter + 1
-            if counter == button:
-                redirecting_link = "https://aniworld.to" + redirect_to_aniworld
-                return redirecting_link
+    for link in soup.findAll("a", {"class": "watchEpisode"}):
+        provider_name = link.find("h4").text
+        if provider_name == button:
+            redirecting_link = "https://aniworld.to" + link.get("href")
+            return redirecting_link, provider_name
 
 
-def vidoza_to_cache(vidoza_url):
-    logger.debug(MODULE_LOGGER_HEAD + "Enterd Vidoza to cache")
+def vidoza_to_cache(vidoza_url, provider):
+    logger.debug(MODULE_LOGGER_HEAD + "Enterd {} to cache".format(provider))
     html_page = urllib.request.urlopen(vidoza_url)
-    soup = BeautifulSoup(html_page, features="html.parser")
-    for link in soup.findAll('source'):
-        cache_link = str(link.get("src"))
-        logger.debug(MODULE_LOGGER_HEAD + "Exiting Vidoza to Cache")
-        return cache_link
+    if provider == "Vidoza":
+        soup = BeautifulSoup(html_page, features="html.parser")
+        cache_link = soup.find("source").get("src")
+    elif provider == "VOE":
+        cache_link = VOE_PATTERN.search(html_page.read().decode('utf-8')).group("url")
+    logger.debug(MODULE_LOGGER_HEAD + "Exiting {} to Cache".format(provider))
+    return cache_link
 
 # ------------------------------------------------------- #
 #                      classes
