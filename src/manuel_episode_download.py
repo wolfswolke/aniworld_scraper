@@ -33,6 +33,11 @@ if write_check:
 else:
     logger.error("No Write Permission. Please check if you own the Folder and/or have permissions to write.")
     exit()
+if os.path.exists(output_path):
+    logger.debug(MODULE_LOGGER_HEAD + "Output Path exists.")
+else:
+    logger.info(MODULE_LOGGER_HEAD + "Output path does not exist. Creating now...")
+    os.mkdir(output_path)
 
 link = anime_url + "staffel-{}/episode-{}".format(season, episode)
 link_to_redirect, provider = aniworld_to_redirect(link, button="Vidoza")
