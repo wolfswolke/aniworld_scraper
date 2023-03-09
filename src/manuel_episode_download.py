@@ -12,6 +12,7 @@ anime_name = "Anime-Name-Goes-Here"
 anime_url = "https://aniworld.to/anime/stream/{}/".format(anime_name)
 season = 0
 episode = 0
+output_path = anime_name
 
 
 def setup_logging(debug_level):
