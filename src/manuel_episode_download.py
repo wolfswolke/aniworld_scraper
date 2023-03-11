@@ -47,5 +47,11 @@ captcha_link = open_captcha_window(link_to_redirect)
 logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
 vidoza_cache_url = find_cache_url(captcha_link, provider)
 logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + vidoza_cache_url)
-file_name = "output/S{}-E{}-{}.mp4".format(season, episode, anime_name)
-create_new_download_thread(vidoza_cache_url, file_name)
+file_name = "{}/S{}-E{}-{}.mp4".format(anime_name, season, episode, anime_name)
+if os.path.exists(file_name):
+    logger.info(MODULE_LOGGER_HEAD + "Episode {} already downloaded.".format(file_name))
+else:
+    logger.info(MODULE_LOGGER_HEAD + "File not downloaded. Downloading: {}".format(file_name))
+    create_new_download_thread(vidoza_cache_url, file_name)
+print("Downloads may still be running. Please dont close this Window until its done")
+print("You will know its done once you see your primary prompt string. Example: C:\\XXX or username@hostname:")
