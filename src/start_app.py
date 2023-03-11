@@ -79,6 +79,14 @@ def button_failsave(internal_link):
         return internal_captcha_link, provider
 
 
+def check_if_already_downloaded(internal_link, file_name):
+    if os.path.exists(file_name):
+        logger.info(MODULE_LOGGER_HEAD + "Episode {} already downloaded.".format(file_name))
+    else:
+        logger.debug(MODULE_LOGGER_HEAD + "File not downloaded. Downloading: {}".format(file_name))
+        create_new_download_thread(internal_link, file_name)
+
+
 # ------------------------------------------------------- #
 #                      classes
 # ------------------------------------------------------- #
@@ -155,12 +163,12 @@ if __name__ == "__main__":
                 if ddos_start_value < ddos_protection_calc:
                     logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
                     ddos_start_value = ddos_start_value + 1
-                    create_new_download_thread(cache_url, file_name)
+                    check_if_already_downloaded(cache_url, file_name)
                 else:
                     logger.info(MODULE_LOGGER_HEAD + "Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
                                                      "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                     time.sleep(ddos_wait_timer)
-                    create_new_download_thread(cache_url, file_name)
+                    check_if_already_downloaded(cache_url, file_name)
                     ddos_start_value = 1
 
     except Exception as e:
