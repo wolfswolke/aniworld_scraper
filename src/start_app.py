@@ -65,14 +65,14 @@ def setup_arguments():
 
 
 def button_failsave(internal_link):
-    link_to_redirect, provider = aniworld_to_redirect(internal_link, button="VOE")
+    link_to_redirect, provider = aniworld_to_redirect(internal_link, button="Vidoza")
     logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
     internal_captcha_link = open_captcha_window(link_to_redirect)
     logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
     if internal_captcha_link:
         return internal_captcha_link, provider
     else:
-        link_to_redirect, provider = aniworld_to_redirect(internal_link, button="Vidoza")
+        link_to_redirect, provider = aniworld_to_redirect(internal_link, button="VOE")
         logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
         internal_captcha_link = open_captcha_window(link_to_redirect)
         logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
