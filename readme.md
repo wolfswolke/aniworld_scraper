@@ -24,11 +24,6 @@ and replace them with print.
 * ddos_wait_timer: How long to wait until next download batch starts. Default 60.
 * ddos_start_value: No need to change this. This is just the Start Value for the DDOS wait loop.
 
-## Feedback
-* Discord: ZKWolf#1926 
-* Mail: zkwolf@zkwolf.com
-
-
 ## Support
 Please create a Issue.
 
