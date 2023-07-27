@@ -29,8 +29,9 @@ MODULE_LOGGER_HEAD = "start_app -> "
 anime_name = "Anime-Name-Goes-Here"
 anime_url = "https://aniworld.to/anime/stream/{}/".format(anime_name)
 season_override = 0  # 0 = no override. 1 = season 1. etc...
-ddos_protection_calc = 5
+ddos_protection_calc = 4
 ddos_wait_timer = 60
+episode_interval_timer = ddos_wait_timer / ddos_protection_calc
 ddos_start_value = 0
 output_path = anime_name
 
@@ -79,12 +80,12 @@ def button_failsave(internal_link):
         return internal_captcha_link, provider
 
 
-def check_if_already_downloaded(internal_link, file_name):
-    if os.path.exists(file_name):
+def already_downloaded(file_name):
+    if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
         logger.info(MODULE_LOGGER_HEAD + "Episode {} already downloaded.".format(file_name))
-    else:
-        logger.debug(MODULE_LOGGER_HEAD + "File not downloaded. Downloading: {}".format(file_name))
-        create_new_download_thread(internal_link, file_name)
+        return True
+    logger.debug(MODULE_LOGGER_HEAD + "File not downloaded. Downloading: {}".format(file_name))
+    return False
 
 
 # ------------------------------------------------------- #
@@ -136,45 +137,37 @@ if __name__ == "__main__":
             seasons = 1
 
         for season in range(int(seasons)):
-            season = season + 1
-            if season_override == 0:
-                episode_count = get_episodes(season, anime_name)
-                logger.info(MODULE_LOGGER_HEAD + "Season {} has {} Episodes.".format(season, episode_count))
-            else:
-                episode_count = get_episodes(season_override, anime_name)
-                logger.info(MODULE_LOGGER_HEAD + "Season {} has {} Episodes.".format(season_override, episode_count))
+            season = season + 1 if season_override == 0 else season_override
+            season_path = f"{output_path}/Season {season:02}"
+            os.makedirs(season_path, exist_ok=True)
+            episode_count = get_episodes(season, anime_name)
+            logger.info(MODULE_LOGGER_HEAD + "Season {} has {} Episodes.".format(season, episode_count))
 
             for episode in range(int(episode_count)):
                 episode = episode + 1
-
-                if season_override == 0:
-                    link = anime_url + "staffel-{}/episode-{}".format(season, episode)
-                else:
-                    link = anime_url + "staffel-{}/episode-{}".format(season_override, episode)
-
-                captcha_link, provider = button_failsave(link)
-                cache_url = find_cache_url(captcha_link, provider)
-                logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + cache_url)
-                if season_override == 0:
-                    file_name = "{}/S{}-E{}-{}.mp4".format(output_path, season, episode, anime_name)
-                else:
-                    file_name = "{}/S{}-E{}-{}.mp4".format(output_path, season_override, episode, anime_name)
+                file_name = "{}/{} - s{:02}e{:02}.mp4".format(season_path, anime_name, season, episode)
                 logger.info(MODULE_LOGGER_HEAD + "File name will be: " + file_name)
-                if ddos_start_value < ddos_protection_calc:
-                    logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
-                    ddos_start_value = ddos_start_value + 1
-                    check_if_already_downloaded(cache_url, file_name)
-                else:
-                    logger.info(MODULE_LOGGER_HEAD + "Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
-                                                     "Protection.".format(ddos_protection_calc, ddos_wait_timer))
-                    time.sleep(ddos_wait_timer)
-                    check_if_already_downloaded(cache_url, file_name)
-                    ddos_start_value = 1
+                if not already_downloaded(file_name):
+                    if ddos_start_value < ddos_protection_calc:
+                        logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
+                        ddos_start_value += 1
+                    else:
+                        logger.info(MODULE_LOGGER_HEAD + "Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
+                                                        "Protection.".format(ddos_protection_calc, ddos_wait_timer))
+                        time.sleep(ddos_wait_timer)
+                        ddos_start_value = 1
+                    link = anime_url + "staffel-{}/episode-{}".format(season, episode)
+                    captcha_link, provider = button_failsave(link)
+                    cache_url = find_cache_url(captcha_link, provider)
+                    logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + cache_url)
+                    time.sleep(episode_interval_timer)
+                    create_new_download_thread(cache_url, file_name)
 
-    except Exception as e:
-        logger.error(MODULE_LOGGER_HEAD + "----------")
-        logger.error(MODULE_LOGGER_HEAD + f"Exception: {e}")
-        logger.error(MODULE_LOGGER_HEAD + "----------")
+
+    # except Exception as e:
+    #     logger.error(MODULE_LOGGER_HEAD + "----------")
+    #     logger.error(MODULE_LOGGER_HEAD + f"Exception: {e}")
+    #     logger.error(MODULE_LOGGER_HEAD + "----------")
 
     except KeyboardInterrupt:
         logger.info("-----------------------------------------------------------")
