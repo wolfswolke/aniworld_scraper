@@ -1,8 +1,7 @@
-beautifulsoup4==4.11.1
-invoke==1.7.3
-requests==2.28.1
+beautifulsoup4==4.12.2
+invoke==2.2.0
+requests==2.31.0
 selenium==4.10.0
-tqdm==4.64.1
-webdriver_manager==4.0.0
+tqdm==4.65.0
 -i https://pip.zkwolf.com/simple/
 zk_tools==1.0.0
