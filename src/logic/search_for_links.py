@@ -24,13 +24,13 @@ VOE_PATTERN = re.compile(r"'mp4': '(?P<url>.+)'")
 # ------------------------------------------------------- #
 
 
-def aniworld_to_redirect(aniworld_link, button):
-    html_page = urllib.request.urlopen(aniworld_link)
+def redirect(site_url, link, button):
+    html_page = urllib.request.urlopen(link)
     soup = BeautifulSoup(html_page, features="html.parser")
     for link in soup.findAll("a", {"class": "watchEpisode"}):
         provider_name = link.find("h4").text
         if provider_name == button:
-            redirecting_link = "https://aniworld.to" + link.get("href")
+            redirecting_link = site_url + link.get("href")
             return redirecting_link, provider_name
 
 
