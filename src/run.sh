@@ -1,12 +1,13 @@
 #!/bin/bash
 
 SCRIPT_PATH="start_app.py"
-TYPE="serie"
-NAME="game-of-thrones"
-SEASON=8 # 0 means all seasons otherwise specify the season you want
-NUM_RUNS=3
+TYPE="anime"
+NAME="tokyo-godfathers"
+LANGUAGE="Deutsch" # most common: ["Deutsch","Ger-Sub","English"]
+SEASON=0 # 0 means all seasons otherwise specify the season you want
+NUM_RUNS=1
 
 for ((i=1; i<=NUM_RUNS; i++))
 do
-    python3 "$SCRIPT_PATH" "$TYPE" "$NAME" "$SEASON"
+    python3 "$SCRIPT_PATH" "$TYPE" "$NAME" "$LANGUAGE" "$SEASON"
 done
