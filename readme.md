@@ -31,4 +31,6 @@ and replace them with print.
 Please create a Issue.
 
 ## Special Thanks:
-Thank you to @Michtdu for the workaround and code for the Captcha!
+Thank you to [Michtdu](https://github.com/Michtdu) for the workaround and code for the Captcha!
+
+Thank you [speedyconzales](https://github.com/speedyconzales)  for adding S.to support
