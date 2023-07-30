@@ -10,6 +10,7 @@ import os
 import time
 import sys
 
+from logic.language import LanguageError
 from logic.search_for_links import redirect
 from logic.search_for_links import find_cache_url
 from logic.collect_all_seasons_and_episods import get_season
@@ -28,6 +29,7 @@ MODULE_LOGGER_HEAD = "start_app -> "
 # ------------------------------------------------------- #
 name = "Name-Goes-Here"
 type = "anime" # choose 'serie' or 'anime'
+language = "Deutsch"
 site_url = {"serie": "https://s.to", # maybe you need another dns to be able to use this site
             "anime": "https://aniworld.to"}
 url = "{}/{}/stream/{}/".format(site_url[type], type, name)
@@ -49,8 +51,8 @@ def setup_logging(debug_level):
 
 
 def setup_arguments():
-    if len(sys.argv) < 3:
-        logger.info(MODULE_LOGGER_HEAD + "Usage: start_app.py <TYPE> <NAME> [Season_overrider]")
+    if len(sys.argv) < 4:
+        logger.info(MODULE_LOGGER_HEAD + "Usage: start_app.py <TYPE> <NAME> <LANGUAGE> [Season_overrider]")
         sys.exit()
 
     global type
@@ -59,29 +61,34 @@ def setup_arguments():
     global name
     name = sys.argv[2]
 
+    global language
+    language = sys.argv[3]
+
     global url
     url = "{}/{}/stream/{}/".format(site_url[type], type, name)
 
     global output_path
     output_path = name
 
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 5:
         global season_override
-        season_override = int(sys.argv[3])
+        season_override = int(sys.argv[4])
         logger.debug(MODULE_LOGGER_HEAD + "Season Override detected. Val: {}".format(season_override))
     else:
         logger.debug(MODULE_LOGGER_HEAD + "No Season Override.")
 
 
-def button_failsave(site_url, internal_link):
-    link_to_redirect, provider = redirect(site_url, internal_link, button="Vidoza")
+def button_failsave(site_url, internal_link, language):
+    provider = "Vidoza"
+    link_to_redirect = redirect(site_url, internal_link, language, provider)
     logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
     internal_captcha_link = open_captcha_window(link_to_redirect)
     logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
     if internal_captcha_link:
         return internal_captcha_link, provider
     else:
-        link_to_redirect, provider = redirect(site_url, internal_link, button="VOE")
+        provider = "VOE"
+        link_to_redirect = redirect(site_url, internal_link, language, provider)
         logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
         internal_captcha_link = open_captcha_window(link_to_redirect)
         logger.debug(MODULE_LOGGER_HEAD + "Return is: " + internal_captcha_link)
@@ -153,9 +160,14 @@ if __name__ == "__main__":
 
             for episode in range(int(episode_count)):
                 episode = episode + 1
-                file_name = "{}/{} - s{:02}e{:02}.mp4".format(season_path, name, season, episode)
+                file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(season_path, name, season, episode, language)
                 logger.info(MODULE_LOGGER_HEAD + "File name will be: " + file_name)
                 if not already_downloaded(file_name):
+                    link = url + "staffel-{}/episode-{}".format(season, episode)
+                    try:
+                        captcha_link, provider = button_failsave(site_url[type], link, language)
+                    except LanguageError:
+                        continue
                     if ddos_start_value < ddos_protection_calc:
                         logger.debug(MODULE_LOGGER_HEAD + "Entered DDOS var check and starting new downloader.")
                         ddos_start_value += 1
@@ -164,12 +176,10 @@ if __name__ == "__main__":
                                                         "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                         time.sleep(ddos_wait_timer)
                         ddos_start_value = 1
-                    link = url + "staffel-{}/episode-{}".format(season, episode)
-                    captcha_link, provider = button_failsave(site_url[type], link)
                     cache_url = find_cache_url(captcha_link, provider)
                     logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + cache_url)
-                    time.sleep(episode_interval_timer)
                     create_new_download_thread(cache_url, file_name)
+                    time.sleep(episode_interval_timer)
 
     # except Exception as e:
     #     logger.error(MODULE_LOGGER_HEAD + "----------")

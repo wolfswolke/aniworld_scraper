@@ -7,6 +7,7 @@
 import re
 from bs4 import BeautifulSoup
 import urllib.request
+from logic.language import get_href_by_language
 from zk_tools.logging_handle import logger
 
 # ------------------------------------------------------- #
@@ -24,16 +25,11 @@ VOE_PATTERN = re.compile(r"'mp4': '(?P<url>.+)'")
 # ------------------------------------------------------- #
 
 
-def redirect(site_url, link, button):
-    html_page = urllib.request.urlopen(link)
-    soup = BeautifulSoup(html_page, features="html.parser")
-    for link in soup.findAll("a", {"class": "watchEpisode"}):
-        provider_name = link.find("h4").text
-        if provider_name == button:
-            redirecting_link = site_url + link.get("href")
-            return redirecting_link, provider_name
-
-
+def redirect(site_url, html_link, language, provider):
+    html_response = urllib.request.urlopen(html_link)
+    href_value = get_href_by_language(html_response, language, provider)
+    return site_url + href_value
+     
 def find_cache_url(url, provider):
     logger.debug(MODULE_LOGGER_HEAD + "Enterd {} to cache".format(provider))
     html_page = urllib.request.urlopen(url)
