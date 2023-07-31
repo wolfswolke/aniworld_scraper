@@ -9,6 +9,7 @@ or it will download all Seasons and Episodes of a serie from S.to
 How to use:
 * Clone the Repo
 * pip install requirements.txt
+* install [ffmpeg](https://ffmpeg.org)
 * For easy use take the *run.sh* file and edit the desired values
 * Either use arguments or edit the start_app.py file
 * ARGUMENTS: .\start_app.py *TYPE* *NAME* *LANGUAGE* [SeasonOverride]

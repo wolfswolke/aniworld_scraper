@@ -4,15 +4,15 @@
 # ------------------------------------------------------- #
 #                     imports
 # ------------------------------------------------------- #
-from bs4 import BeautifulSoup
 import urllib.request
 
+from bs4 import BeautifulSoup
 from zk_tools.logging_handle import logger
 
 # ------------------------------------------------------- #
 #                   definitions
 # ------------------------------------------------------- #
-MODULE_LOGGER_HEAD = "collect_all_seasons_and_episods -> "
+MODULE_LOGGER_HEAD = "collect_all_seasons_and_episodes.py -> "
 
 # ------------------------------------------------------- #
 #                   global variables

@@ -5,24 +5,43 @@
 #                     imports
 # ------------------------------------------------------- #
 import re
-from bs4 import BeautifulSoup
 import urllib.request
+from urllib.error import URLError
 from logic.language import get_href_by_language
+from logic.language import ProviderError
+from bs4 import BeautifulSoup
 from zk_tools.logging_handle import logger
+from logic.captcha import open_captcha_window
 
 # ------------------------------------------------------- #
 #                   definitions
 # ------------------------------------------------------- #
-MODULE_LOGGER_HEAD = "search_for_links ->"
+MODULE_LOGGER_HEAD = "search_for_links.py ->"
 
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-VOE_PATTERN = re.compile(r"'mp4': '(?P<url>.+)'")
+VOE_PATTERN = re.compile(r"'hls': '(?P<url>.+)'")
 
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
+
+
+def get_redirect_link(site_url, internal_link, language, provider):
+    link_to_redirect = redirect(site_url, internal_link, language, provider)
+    logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
+    # if you encounter issues with captchas use this line below
+    # link_to_redirect = open_captcha_window(link_to_redirect)
+    logger.debug(MODULE_LOGGER_HEAD + "Return is: " + link_to_redirect)
+    return link_to_redirect, provider
+
+
+def get_redirect_link_by_provider(site_url, internal_link, language):
+    try:
+        return get_redirect_link(site_url, internal_link, language, "VOE")
+    except ProviderError:
+        return get_redirect_link(site_url, internal_link, language, "Vidoza")
 
 
 def redirect(site_url, html_link, language, provider):
@@ -30,9 +49,15 @@ def redirect(site_url, html_link, language, provider):
     href_value = get_href_by_language(html_response, language, provider)
     return site_url + href_value
      
+
 def find_cache_url(url, provider):
     logger.debug(MODULE_LOGGER_HEAD + "Enterd {} to cache".format(provider))
-    html_page = urllib.request.urlopen(url)
+    try:
+        html_page = urllib.request.urlopen(url)
+    except URLError as e:
+        logger.warning(MODULE_LOGGER_HEAD + f"{e}")
+        logger.info(MODULE_LOGGER_HEAD + "Trying again...")
+        return find_cache_url(url, provider)
     if provider == "Vidoza":
         soup = BeautifulSoup(html_page, features="html.parser")
         cache_link = soup.find("source").get("src")
