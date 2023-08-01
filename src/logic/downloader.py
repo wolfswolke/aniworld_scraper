@@ -54,10 +54,8 @@ def download_and_convert_hls_stream(hls_url, file_name):
 
 def create_new_download_thread(url, file_name, provider):
     logger.debug(MODULE_LOGGER_HEAD + "Entered Downloader.")
-    if provider == "Vidoza":
-        download_thread = threading.Thread(target=download, args=(url, file_name))
-        download_thread.start()
+    if provider in ["Vidoza","Streamtape"]:
+        threading.Thread(target=download, args=(url, file_name)).start()
     elif provider == "VOE":
-        download_thread = threading.Thread(target=download_and_convert_hls_stream, args=(url, file_name))
-        download_thread.start()
+        threading.Thread(target=download_and_convert_hls_stream, args=(url, file_name)).start()
     logger.info(MODULE_LOGGER_HEAD + "File {} added to queue.".format(file_name))

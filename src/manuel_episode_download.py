@@ -2,7 +2,7 @@ from zk_tools.logging_handle import logger
 
 import os
 
-from logic.search_for_links import redirect
+from logic.search_for_links import get_redirect_link
 from logic.search_for_links import find_cache_url
 from logic.downloader import create_new_download_thread
 from logic.captcha import open_captcha_window
@@ -41,7 +41,7 @@ else:
     os.mkdir(output_path)
 
 link = anime_url + "staffel-{}/episode-{}".format(season, episode)
-link_to_redirect, provider = redirect(link, button="Vidoza")
+link_to_redirect, provider = get_redirect_link(link, button="Vidoza")
 logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
 captcha_link = open_captcha_window(link_to_redirect)
 logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
