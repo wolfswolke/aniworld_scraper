@@ -9,6 +9,7 @@ or it will download all Seasons and Episodes of a serie from S.to
 How to use:
 * Clone the Repo
 * pip install requirements.txt
+* install [ffmpeg](https://ffmpeg.org)
 * For easy use take the *run.sh* file and edit the desired values
 * Either use arguments or edit the start_app.py file
 * ARGUMENTS: .\start_app.py *TYPE* *NAME* *LANGUAGE* [SeasonOverride]
@@ -26,7 +27,6 @@ and replace them with print.
 * ddos_protection_calc: How many episodes to download before waiting 60 seconds. Default 4.
 * ddos_wait_timer: How long to wait until next download batch starts. Default 60.
 * ddos_start_value: No need to change this. This is just the Start Value for the DDOS wait loop.
-* episode_interval_timer: Sets a timer and waits a short time in between downloading the files
 
 ## Support
 Please create a Issue.

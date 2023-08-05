@@ -1,11 +1,18 @@
 from bs4 import BeautifulSoup
 from zk_tools.logging_handle import logger
 
-MODULE_LOGGER_HEAD = "language -> "
+MODULE_LOGGER_HEAD = "language.py -> "
+
+
+class ProviderError(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
 
 class LanguageError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
+
 
 def restructure_dict(given_dict):
     new_dict = {}
@@ -23,6 +30,7 @@ def restructure_dict(given_dict):
                 already_seen.add(value)
     return return_dict
 
+
 def extract_lang_key_mapping(soup):
     lang_key_mapping = {}
     # Find the div with class "changeLanguageBox"
@@ -36,6 +44,7 @@ def extract_lang_key_mapping(soup):
             if language and data_lang_key:
                 lang_key_mapping[language] = data_lang_key
     return restructure_dict(lang_key_mapping)
+
 
 def get_href_by_language(html_content, language, provider):
     soup = BeautifulSoup(html_content, "html.parser")
@@ -51,4 +60,4 @@ def get_href_by_language(html_content, language, provider):
     if matching_li_element:
         href = matching_li_element.get("data-link-target","")
         return href
-    raise LanguageError(logger.error(MODULE_LOGGER_HEAD+f"No matching download found for language '{language}' and provider '{provider}'"))
+    raise ProviderError(logger.error(MODULE_LOGGER_HEAD+f"No matching download found for language '{language}' and provider '{provider}'"))
