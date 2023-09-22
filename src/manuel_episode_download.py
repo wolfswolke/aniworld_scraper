@@ -2,10 +2,9 @@ from zk_tools.logging_handle import logger
 
 import os
 
-from logic.search_for_links import get_redirect_link
+from logic.search_for_links import get_redirect_link_by_provider
 from logic.search_for_links import find_cache_url
 from logic.downloader import create_new_download_thread
-from logic.captcha import open_captcha_window
 
 MODULE_LOGGER_HEAD = "manuel_episode_download.py -> "
 anime_name = "Anime-Name-Goes-Here"
@@ -13,6 +12,8 @@ anime_url = "https://aniworld.to/anime/stream/{}/".format(anime_name)
 season = 0
 episode = 0
 output_path = anime_name
+lanugage = "Deutsch" # "Deutsch", "Ger-Sub" or "English
+type_of_media = "anime" # choose 'serie' or 'anime'
 
 
 def setup_logging(debug_level):
@@ -39,19 +40,17 @@ if os.path.exists(output_path):
 else:
     logger.info(MODULE_LOGGER_HEAD + "Output path does not exist. Creating now...")
     os.mkdir(output_path)
-
+site_url = {"serie": "https://s.to", "anime": "https://aniworld.to"}
 link = anime_url + "staffel-{}/episode-{}".format(season, episode)
-link_to_redirect, provider = get_redirect_link(link, button="Vidoza")
-logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
-captcha_link = open_captcha_window(link_to_redirect)
-logger.debug(MODULE_LOGGER_HEAD + "Return is: " + captcha_link)
-vidoza_cache_url = find_cache_url(captcha_link, provider)
-logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + vidoza_cache_url)
+redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, lanugage)
+logger.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + redirect_link)
+cache_url = find_cache_url(redirect_link, provider)
+logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + cache_url)
 file_name = "{}/S{}-E{}-{}.mp4".format(anime_name, season, episode, anime_name)
 if os.path.exists(file_name):
     logger.info(MODULE_LOGGER_HEAD + "Episode {} already downloaded.".format(file_name))
 else:
     logger.info(MODULE_LOGGER_HEAD + "File not downloaded. Downloading: {}".format(file_name))
-    create_new_download_thread(vidoza_cache_url, file_name)
+    create_new_download_thread(cache_url, file_name, provider)
 print("Downloads may still be running. Please dont close this Window until its done")
 print("You will know its done once you see your primary prompt string. Example: C:\\XXX or username@hostname:")
