@@ -142,6 +142,9 @@ def main(ddos_start_value, ddos_protection_calc, ddos_wait_timer, site_url, url)
                     time.sleep(ddos_wait_timer)
                     ddos_start_value = 1
                 cache_url = find_cache_url(redirect_link, provider)
+                if cache_url == 0:
+                    logger.error(MODULE_LOGGER_HEAD + f"Could not find cache url for {provider} on {season}, {episode}.")
+                    continue
                 logger.debug(MODULE_LOGGER_HEAD + "{} Cache URL is: ".format(provider) + cache_url)
                 create_new_download_thread(cache_url, file_name, provider)
 

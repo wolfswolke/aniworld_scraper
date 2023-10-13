@@ -17,6 +17,7 @@ from logic.captcha import open_captcha_window
 #                   definitions
 # ------------------------------------------------------- #
 MODULE_LOGGER_HEAD = "search_for_links.py ->"
+cache_url_attempts = 0
 
 # ------------------------------------------------------- #
 #                   global variables
@@ -63,24 +64,38 @@ def get_redirect_link(site_url, html_link, language, provider):
      
 
 def find_cache_url(url, provider):
+    global cache_url_attempts
     logger.debug(MODULE_LOGGER_HEAD + "Enterd {} to cache".format(provider))
     try:
         html_page = urllib.request.urlopen(url)
     except URLError as e:
         logger.warning(MODULE_LOGGER_HEAD + f"{e}")
         logger.info(MODULE_LOGGER_HEAD + "Trying again...")
-        return find_cache_url(url, provider)
-    if provider == "Vidoza":
-        soup = BeautifulSoup(html_page, features="html.parser")
-        cache_link = soup.find("source").get("src")
-    elif provider == "VOE":
-        cache_link = VOE_PATTERN.search(html_page.read().decode('utf-8')).group("url")
-    elif provider == "Streamtape":
-        cache_link = STREAMTAPE_PATTERN.search(html_page.read().decode('utf-8'))
-        if cache_link is None:
+        if cache_url_attempts < 5:
             return find_cache_url(url, provider)
-        cache_link = "https://" + provider + ".com/" + cache_link.group()[:-1]
-        logger.debug(MODULE_LOGGER_HEAD + f"This is the found video link of {provider}: {cache_link}")
+        else:
+            logger.error(MODULE_LOGGER_HEAD + "Could not find cache url for {}.".format(provider))
+            return 0
+    try:
+        if provider == "Vidoza":
+            soup = BeautifulSoup(html_page, features="html.parser")
+            cache_link = soup.find("source").get("src")
+        elif provider == "VOE":
+            cache_link = VOE_PATTERN.search(html_page.read().decode('utf-8')).group("url")
+        elif provider == "Streamtape":
+            cache_link = STREAMTAPE_PATTERN.search(html_page.read().decode('utf-8'))
+            if cache_link is None:
+                return find_cache_url(url, provider)
+            cache_link = "https://" + provider + ".com/" + cache_link.group()[:-1]
+            logger.debug(MODULE_LOGGER_HEAD + f"This is the found video link of {provider}: {cache_link}")
+    except AttributeError:
+        logger.info(MODULE_LOGGER_HEAD + "Trying again...")
+        if cache_url_attempts < 5:
+            cache_url_attempts += 1
+            return find_cache_url(url, provider)
+        else:
+            logger.error(MODULE_LOGGER_HEAD + "Could not find cache url for {}.".format(provider))
+            return 0
         
     logger.debug(MODULE_LOGGER_HEAD + "Exiting {} to Cache".format(provider))
     return cache_link
