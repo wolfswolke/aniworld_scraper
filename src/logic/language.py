@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from zk_tools.logging_handle import logger
+import logging
+
 
 MODULE_LOGGER_HEAD = "language.py -> "
 
@@ -52,7 +53,7 @@ def get_href_by_language(html_content, language, provider):
     # Find the data-lang-key value based on the input language
     lang_key = lang_key_mapping.get(language)
     if lang_key is None:
-        raise LanguageError(logger.error(MODULE_LOGGER_HEAD+f"Invalid language input. Supported languages: {list(lang_key_mapping.keys())}"))
+        raise LanguageError(logging.error(MODULE_LOGGER_HEAD+f"Invalid language input. Supported languages: {list(lang_key_mapping.keys())}"))
     # Find all <li> elements with the given data-lang-key value and h4=provider"
     matching_li_elements = soup.find_all("li", {"data-lang-key": lang_key})
     matching_li_element = next((li_element for li_element in matching_li_elements if li_element.find("h4").get_text() == provider), None)
@@ -60,4 +61,4 @@ def get_href_by_language(html_content, language, provider):
     if matching_li_element:
         href = matching_li_element.get("data-link-target","")
         return href
-    raise ProviderError(logger.error(MODULE_LOGGER_HEAD+f"No matching download found for language '{language}' and provider '{provider}'"))
+    raise ProviderError(logging.error(MODULE_LOGGER_HEAD+f"No matching download found for language '{language}' and provider '{provider}'"))

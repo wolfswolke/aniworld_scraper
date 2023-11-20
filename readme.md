@@ -14,8 +14,6 @@ How to use:
 * Either use arguments or edit the start_app.py file
 * ARGUMENTS: .\start_app.py *TYPE* *NAME* *LANGUAGE* [SeasonOverride]
 * Change name in start_app.py to your desired name (Format -> see URL of the anime or serie)
-* INFO: zk_tools is a self writen library. I used it here as a Logging handler. If you don't trust me remove all logger.X
-and replace them with print. 
 * If you now start the start_app.py a small Chrome window will open everytime it finds an Episode. This is for the Google Captcha!
 * If the Captcha appears please solve it. If you close the window you have to restart the application.
 
