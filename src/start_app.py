@@ -6,7 +6,6 @@
 # ------------------------------------------------------- #
 import os
 import time
-import sys
 
 from .logic.search_for_links import find_cache_url, get_redirect_link_by_provider
 from .logic.collect_all_seasons_and_episodes import get_season
@@ -14,57 +13,17 @@ from .logic.collect_all_seasons_and_episodes import get_episodes
 from .logic.downloader import create_new_download_thread, already_downloaded
 from .logic.language import LanguageError
 import logging
-from .constants import APP_VERSION, name, type_of_media, name, language, output_path, season_override
+from .constants import APP_VERSION, type_of_media, name, language, output_path, season_override, url, site_url, ddos_start_timer, ddos_protection_calc, ddos_wait_timer
 
 
 MODULE_LOGGER_HEAD = "start_app.py -> "
-
-
-# ------------------------------------------------------- #
-#                      functions
-# ------------------------------------------------------- #
-
-def setup_arguments(site_url):
-    if len(sys.argv) < 4:
-        logging.info(MODULE_LOGGER_HEAD + "Usage: start_app.py <TYPE> <NAME> <LANGUAGE> [SeasonOverride]")
-        sys.exit()
-
-    global type_of_media
-    type_of_media = sys.argv[1]
-
-    global name
-    name = sys.argv[2]
-
-    global language
-    language = sys.argv[3]
-
-    url = "{}/{}/stream/{}/".format(site_url[type_of_media], type_of_media, name)
-
-    global output_path
-    output_path = name
-
-    if len(sys.argv) == 5:
-        global season_override
-        season_override = int(sys.argv[4])
-        logging.debug(MODULE_LOGGER_HEAD + "Season Override detected. Val: {}".format(season_override))
-    else:
-        logging.debug(MODULE_LOGGER_HEAD + "No Season Override.")
-
-    return url
-# ------------------------------------------------------- #
-#                      classes
-# ------------------------------------------------------- #
-
 
 # ------------------------------------------------------- #
 #                       main
 # ------------------------------------------------------- #
 
 
-def main(ddos_start_value, ddos_protection_calc, ddos_wait_timer, site_url, url):
-    if name == "Name-Goes-Here":
-        url = setup_arguments(site_url, url)
-
+def main():
     logging.info("------------- AnimeSerienScraper {} started ------------".format(APP_VERSION))
 
     read_check = os.access('DO_NOT_DELETE.txt', os.R_OK)
