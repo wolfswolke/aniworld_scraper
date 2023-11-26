@@ -3,4 +3,3 @@ invoke==2.2.0
 requests==2.31.0
 selenium==4.15.2
 tqdm==4.66.1
--i https://pip.zkwolf.com/simple/
