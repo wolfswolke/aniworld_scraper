@@ -21,8 +21,8 @@ APP_VERSION = "v01-10-00"
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-name = parse_cli_arguments("Anime-Name-Goes-Here", 2)
 type_of_media = parse_cli_arguments("anime", 1)  # choose 'serie' or 'anime'
+name = parse_cli_arguments("Anime-Name-Goes-Here", 2)
 language = parse_cli_arguments("Deutsch", 3)
 season_override = parse_cli_arguments(0, 4)  # 0 = no override. 1 = season 1. etc...
 episode_override = 0  # 0 = no override. 1 = episode 1. etc...
