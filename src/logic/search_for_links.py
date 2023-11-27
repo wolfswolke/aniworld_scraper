@@ -1,17 +1,11 @@
-"""
-
-"""
-# ------------------------------------------------------- #
-#                     imports
-# ------------------------------------------------------- #
+import logging
 import re
 import urllib.request
 from urllib.error import URLError
-from .language import get_href_by_language
-from .language import ProviderError
-from bs4 import BeautifulSoup
-import logging
 
+from bs4 import BeautifulSoup
+
+from src.logic.language import ProviderError, get_href_by_language
 
 # ------------------------------------------------------- #
 #                   definitions

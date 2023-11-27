@@ -1,13 +1,12 @@
-import time
-import requests
-import threading
-import subprocess
-import platform
-import os
-
-from os import path
 import logging
+import os
+import platform
+import subprocess
+import threading
+import time
+from os import path
 
+import requests
 
 MODULE_LOGGER_HEAD = "downloader.py -> "
 

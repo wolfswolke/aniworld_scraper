@@ -1,12 +1,20 @@
-from src.start_app import main
 import logging
 
+from src.start_app import main
+
 logging.basicConfig(level=logging.DEBUG)
+
 
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
 if __name__ == "__main__":
+    logging.debug("debug")
+    logging.info("info")
+    logging.warning("warning")
+    logging.error("error")
+
+
     try:
         main()
 

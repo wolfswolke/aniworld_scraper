@@ -23,7 +23,6 @@ How to use:
 * language: Determine the desired language of the files. Common options are: "Deutsch", "Ger-Sub" and "English"
 * season_override: Specify which season to Download. 0 is the Default and will download all Seasons.
 * episode_override:
-* ddos_start_timer:
 * ddos_protection_calc: How many episodes to download before waiting 60 seconds. Default 4.
 * ddos_wait_timer: How long to wait until next download batch starts. Default 60.
 * output_path:

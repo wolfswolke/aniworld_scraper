@@ -1,15 +1,9 @@
-"""
+import os
+from threading import Thread
 
-"""
-# ------------------------------------------------------- #
-#                     imports
-# ------------------------------------------------------- #
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
-from threading import Thread
-
-import os
 
 # ------------------------------------------------------- #
 #                   definitions

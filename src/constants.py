@@ -1,5 +1,5 @@
-import sys
 import logging
+import sys
 
 
 def parse_cli_arguments(default: str | int, position: int) -> str | int:
@@ -26,7 +26,6 @@ name = parse_cli_arguments("Anime-Name-Goes-Here", 2)
 language = parse_cli_arguments("Deutsch", 3)
 season_override = parse_cli_arguments(0, 4)  # 0 = no override. 1 = season 1. etc...
 episode_override = 0  # 0 = no override. 1 = episode 1. etc...
-ddos_start_timer = 0
 ddos_protection_calc = 5
 ddos_wait_timer = 180  # in seconds
 output_path = name

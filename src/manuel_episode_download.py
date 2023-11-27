@@ -1,12 +1,11 @@
 import logging
-
 import os
 
-from logic.search_for_links import get_redirect_link_by_provider
-from logic.search_for_links import find_cache_url
-from logic.downloader import create_new_download_thread
-
-from constants import output_path, season_override, episode_override, language, name, type_of_media
+from src.constants import (episode_override, language, name, output_path,
+                           season_override, type_of_media)
+from src.logic.downloader import create_new_download_thread
+from src.logic.search_for_links import (find_cache_url,
+                                        get_redirect_link_by_provider)
 
 MODULE_LOGGER_HEAD = "manuel_episode_download.py -> "
 anime_url = "https://aniworld.to/anime/stream/{}/".format(name)

@@ -1,20 +1,18 @@
 """
 
 """
-# ------------------------------------------------------- #
-#                     imports
-# ------------------------------------------------------- #
+import logging
 import os
 import time
 
-from .logic.search_for_links import find_cache_url, get_redirect_link_by_provider
-from .logic.collect_all_seasons_and_episodes import get_season
-from .logic.collect_all_seasons_and_episodes import get_episodes
-from .logic.downloader import create_new_download_thread, already_downloaded
-from .logic.language import LanguageError
-import logging
-from .constants import APP_VERSION, type_of_media, name, language, output_path, season_override, url, site_url, ddos_start_timer, ddos_protection_calc, ddos_wait_timer
-
+from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
+                           language, name, output_path, season_override,
+                           site_url, type_of_media, url)
+from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season
+from src.logic.downloader import already_downloaded, create_new_download_thread
+from src.logic.language import LanguageError
+from src.logic.search_for_links import (find_cache_url,
+                                        get_redirect_link_by_provider)
 
 MODULE_LOGGER_HEAD = "start_app.py -> "
 
@@ -24,6 +22,9 @@ MODULE_LOGGER_HEAD = "start_app.py -> "
 
 
 def main():
+    ddos_start_value = 0
+
+
     logging.info("------------- AnimeSerienScraper {} started ------------".format(APP_VERSION))
 
     read_check = os.access('DO_NOT_DELETE.txt', os.R_OK)

@@ -1,6 +1,6 @@
-from bs4 import BeautifulSoup
 import logging
 
+from bs4 import BeautifulSoup
 
 MODULE_LOGGER_HEAD = "language.py -> "
 
