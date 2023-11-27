@@ -1,16 +1,17 @@
-import logging
 import re
 import urllib.request
 from urllib.error import URLError
 
 from bs4 import BeautifulSoup
 
+from src.custom_logging import setup_logger
 from src.logic.language import ProviderError, get_href_by_language
+
+logger = setup_logger(__name__)
 
 # ------------------------------------------------------- #
 #                   definitions
 # ------------------------------------------------------- #
-MODULE_LOGGER_HEAD = "search_for_links.py ->"
 cache_url_attempts = 0
 
 # ------------------------------------------------------- #
@@ -53,22 +54,22 @@ def get_redirect_link(site_url, html_link, language, provider):
     html_response = urllib.request.urlopen(html_link)
     href_value = get_href_by_language(html_response, language, provider)
     link_to_redirect = site_url + href_value
-    logging.debug(MODULE_LOGGER_HEAD + "Link to redirect is: " + link_to_redirect)
+    logger.debug("Link to redirect is: " + link_to_redirect)
     return link_to_redirect, provider
      
 
 def find_cache_url(url, provider):
     global cache_url_attempts
-    logging.debug(MODULE_LOGGER_HEAD + "Enterd {} to cache".format(provider))
+    logger.debug("Enterd {} to cache".format(provider))
     try:
         html_page = urllib.request.urlopen(url)
     except URLError as e:
-        logging.warning(MODULE_LOGGER_HEAD + f"{e}")
-        logging.info(MODULE_LOGGER_HEAD + "Trying again...")
+        logger.warning(f"{e}")
+        logger.info("Trying again...")
         if cache_url_attempts < 5:
             return find_cache_url(url, provider)
         else:
-            logging.error(MODULE_LOGGER_HEAD + "Could not find cache url for {}.".format(provider))
+            logger.error("Could not find cache url for {}.".format(provider))
             return 0
     try:
         if provider == "Vidoza":
@@ -81,17 +82,17 @@ def find_cache_url(url, provider):
             if cache_link is None:
                 return find_cache_url(url, provider)
             cache_link = "https://" + provider + ".com/" + cache_link.group()[:-1]
-            logging.debug(MODULE_LOGGER_HEAD + f"This is the found video link of {provider}: {cache_link}")
+            logger.debug(f"This is the found video link of {provider}: {cache_link}")
     except AttributeError:
-        logging.info(MODULE_LOGGER_HEAD + "Trying again...")
+        logger.info("Trying again...")
         if cache_url_attempts < 5:
             cache_url_attempts += 1
             return find_cache_url(url, provider)
         else:
-            logging.error(MODULE_LOGGER_HEAD + "Could not find cache url for {}.".format(provider))
+            logger.error("Could not find cache url for {}.".format(provider))
             return 0
         
-    logging.debug(MODULE_LOGGER_HEAD + "Exiting {} to Cache".format(provider))
+    logger.debug("Exiting {} to Cache".format(provider))
     return cache_link
 
 # ------------------------------------------------------- #

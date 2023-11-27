@@ -1,11 +1,14 @@
-import logging
 import sys
+
+from src.custom_logging import setup_logger
+
+logger = setup_logger(__name__)
 
 
 def parse_cli_arguments(default: str | int, position: int) -> str | int:
     try:
         cli_argument: str = sys.argv[position]
-        logging.debug(f"cli argument detected on position:{position} with value:{cli_argument}")
+        logger.debug(f"cli argument detected on position:{position} with value:{cli_argument}")
         if type(default) is int:
             cli_argument: int = int(cli_argument)
         return cli_argument
