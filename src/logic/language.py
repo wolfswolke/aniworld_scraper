@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
-from zk_tools.logging_handle import logger
 
-MODULE_LOGGER_HEAD = "language.py -> "
+from src.custom_logging import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class ProviderError(Exception):
