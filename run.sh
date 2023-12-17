@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCRIPT_PATH="start_app.py"
+SCRIPT_PATH="main.py"
 TYPE="anime"
-NAME="tokyo-godfathers"
+NAME="Name-Goes-Here"
 LANGUAGE="Deutsch" # most common: ["Deutsch","Ger-Sub","English"]
 SEASON=0 # 0 means all seasons otherwise specify the season you want
 NUM_RUNS=1
