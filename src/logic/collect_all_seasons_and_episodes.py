@@ -34,6 +34,19 @@ def get_episodes(url_path, season_count):
     logger.debug("Now leaving Function get_episodes")
     return episode_count - 1
 
+def get_movies(url_path):
+    logger.debug("Entered get_movies")
+    url = "{}filme/".format(url_path)
+    movie_count = 1
+    html_page = urllib.request.urlopen(url, timeout=50)
+    soup = BeautifulSoup(html_page, features="html.parser")
+    for link in soup.findAll('a'):
+        movie = str(link.get("href"))
+        if "/filme/film-{}".format(movie_count) in movie:
+            movie_count = movie_count + 1
+    logger.debug("Now leaving Function get_movies")
+    return movie_count - 1
+
 # ------------------------------------------------------- #
 #                      classes
 # ------------------------------------------------------- #

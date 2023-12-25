@@ -3,9 +3,9 @@ import time
 
 from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
                            language, name, output_path, season_override,
-                           site_url, type_of_media, url)
+                           site_url, type_of_media, url, movie)
 from src.custom_logging import setup_logger
-from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season
+from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season, get_movies
 from src.logic.downloader import already_downloaded, create_new_download_thread
 from src.logic.language import LanguageError
 from src.logic.search_for_links import (find_cache_url,
@@ -45,7 +45,10 @@ def main():
 
     if season_override == 0:
         logger.info("No Season override detected.")
-        seasons = get_season(url)
+        if movie:
+            seasons = 1
+        else:
+            seasons = get_season(url)
         logger.info("We have this many seasons: {}".format(seasons))
     else:
         logger.info("Season Override detected. Override set to: {}".format(season_override))
@@ -55,17 +58,30 @@ def main():
 
     for season in range(int(seasons)):
         season = season + 1 if season_override == 0 else season_override
-        season_path = f"{output_path}/Season {season:02}"
+        if movie:
+            season_path = f"{output_path}/Movies"
+        else:
+            season_path = f"{output_path}/Season {season:02}"
         os.makedirs(season_path, exist_ok=True)
-        episode_count = get_episodes(url, season)
+
+        if movie:
+            episode_count = get_movies(url)
+        else:
+            episode_count = get_episodes(url, season)
         logger.info("Season {} has {} Episodes.".format(season, episode_count))
 
         for episode in range(int(episode_count)):
             episode = episode + 1
-            file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(season_path, name, season, episode, language)
+            if movie:
+                file_name = "{}/{}-{}.mp4".format(season_path, name, episode)
+            else:
+                file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(season_path, name, season, episode, language)
             logger.info("File name will be: " + file_name)
             if not already_downloaded(file_name):
-                link = url + "staffel-{}/episode-{}".format(season, episode)
+                if movie:
+                    link = url + "filme/film-{}".format(episode)
+                else:
+                    link = url + "staffel-{}/episode-{}".format(season, episode)
                 try:
                     redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language)
                 except LanguageError:
