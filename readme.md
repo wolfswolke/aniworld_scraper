@@ -9,8 +9,13 @@ or it will download all Seasons and Episodes of a serie from S.to
 How to use:
 * Clone the Repo
 * `pip install requirements.txt`
-* install [ffmpeg](https://ffmpeg.org)
+* download or install [ffmpeg](https://ffmpeg.org) (If you download it put it in the src folder)
+
+
 * On Unix for easy use take the *run.sh* file and edit the desired values
+* On Windows for easy use take the *run.bat* file and edit the desired values
+
+
 * Either use arguments or edit the `src/constants.py` file
 * ARGUMENTS: `main.py <TYPE> <NAME> <LANGUAGE> [SeasonOverride]`
 * Change name in `src/constants.py` to your desired name (Format -> see URL of the anime or serie)
