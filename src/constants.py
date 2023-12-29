@@ -28,7 +28,7 @@ APP_VERSION = "v01-10-00"
 type_of_media = parse_cli_arguments("anime", 1)  # choose 'serie' or 'anime'
 name = parse_cli_arguments("Name-Goes-Here", 2)
 language = parse_cli_arguments("Deutsch", 3)
-movie = (parse_cli_arguments(False, 4).lower() == 'true')  # True = movie. False = episode  # True = movie. False = episode
+dlMode = parse_cli_arguments("Series", 4)  # Options: Movies, Series, All
 season_override = parse_cli_arguments(0, 5)  # 0 = no override. 1 = season 1. etc...
 episode_override = 0  # 0 = no override. 1 = episode 1. etc...
 ddos_protection_calc = 5
