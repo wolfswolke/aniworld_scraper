@@ -29,7 +29,7 @@ How to use:
 * language: Determine the desired language of the files. Common options are: "Deutsch", "Ger-Sub" and "English"
 
 ### Optional:
-* movie: If you want to download a movie set this to True. Default is False.
+* dlMode: Choose the type of Content you want to download. Valid arguments are: Movies, Series, All. Default is Series.
 * season_override: Specify which season to Download. 0 is the Default and will download all Seasons.
 
 ## Constants
