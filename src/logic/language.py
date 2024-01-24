@@ -50,13 +50,20 @@ def extract_lang_key_mapping(soup):
 def get_href_by_language(html_content, language, provider):
     soup = BeautifulSoup(html_content, "html.parser")
     lang_key_mapping = extract_lang_key_mapping(soup)
+
+    # Debug logs
+    logger.debug(f"Language mapping: {lang_key_mapping}")
+    logger.debug(f"Given language: {language}")
+
     # Find the data-lang-key value based on the input language
     lang_key = lang_key_mapping.get(language)
     if lang_key is None:
-        raise LanguageError(logger.error(f"Invalid language input. Supported languages: {list(lang_key_mapping.keys())}"))
+        raise LanguageError(logger.error(f"Invalid language input. Supported languages: "
+                                         f"{list(lang_key_mapping.keys())}"))
     # Find all <li> elements with the given data-lang-key value and h4=provider"
     matching_li_elements = soup.find_all("li", {"data-lang-key": lang_key})
-    matching_li_element = next((li_element for li_element in matching_li_elements if li_element.find("h4").get_text() == provider), None)
+    matching_li_element = next((li_element for li_element in matching_li_elements
+                                if li_element.find("h4").get_text() == provider), None)
     # Check if any matching elements were found and return the corresponding href
     if matching_li_element:
         href = matching_li_element.get("data-link-target","")
