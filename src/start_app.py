@@ -15,6 +15,7 @@ from src.successes import write_succs
 
 logger = setup_logger(__name__)
 
+
 # ------------------------------------------------------- #
 #                       main
 # ------------------------------------------------------- #
@@ -23,7 +24,6 @@ logger = setup_logger(__name__)
 def main():
     ddos_start_value = 0
 
-
     logger.info("------------- AnimeSerienScraper {} started ------------".format(APP_VERSION))
 
     read_check = os.access('DO_NOT_DELETE.txt', os.R_OK)
@@ -31,14 +31,14 @@ def main():
         logger.debug("We have Read Permission")
     else:
         logger.error("No Read Permission. Please check if you own the Folder and/or have "
-                                            "permissions to read.")
+                     "permissions to read.")
         exit()
     write_check = os.access('DO_NOT_DELETE.txt', os.W_OK)
     if write_check:
         logger.debug("We have Write Permission")
     else:
         logger.error("No Write Permission. Please check if you own the Folder and/or have "
-                                            "permissions to write.")
+                     "permissions to write.")
         exit()
 
     if name == "Name-Goes-Here":
@@ -86,7 +86,6 @@ def main():
             logger.info("Show has {} Movies/Specials.".format(episode_count_movies))
             logger.info("Season {} has {} Episodes.".format(season, episode_count_series))
 
-
         if dlMode.lower() == 'movies':
             for episode in range(int(episode_count_movies)):
                 episode = episode + 1
@@ -103,7 +102,7 @@ def main():
                         ddos_start_value += 1
                     else:
                         logger.info("Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
-                                        "Protection.".format(ddos_protection_calc, ddos_wait_timer))
+                                    "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                         time.sleep(ddos_wait_timer)
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
@@ -128,7 +127,7 @@ def main():
                         ddos_start_value += 1
                     else:
                         logger.info("Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
-                                        "Protection.".format(ddos_protection_calc, ddos_wait_timer))
+                                    "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                         time.sleep(ddos_wait_timer)
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
@@ -153,7 +152,7 @@ def main():
                         ddos_start_value += 1
                     else:
                         logger.info("Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
-                                        "Protection.".format(ddos_protection_calc, ddos_wait_timer))
+                                    "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                         time.sleep(ddos_wait_timer)
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
@@ -177,7 +176,7 @@ def main():
                         ddos_start_value += 1
                     else:
                         logger.info("Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
-                                        "Protection.".format(ddos_protection_calc, ddos_wait_timer))
+                                    "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                         time.sleep(ddos_wait_timer)
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)

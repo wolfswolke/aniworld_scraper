@@ -14,7 +14,6 @@ from src.successes import append_success
 logger = setup_logger(__name__)
 
 
-
 def already_downloaded(file_name):
     if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
         logger.info("Episode {} already downloaded.".format(file_name))
@@ -45,7 +44,7 @@ def download(link, file_name):
             logger.debug("URL: {}, filename {}".format(link, file_name))
             time.sleep(20)
             retry_count = 1
-        
+
 
 def download_and_convert_hls_stream(hls_url, file_name):
     try:
@@ -53,7 +52,7 @@ def download_and_convert_hls_stream(hls_url, file_name):
         if platform.system() == "Windows":
             subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
-            subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)    
+            subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         logger.success("Finished download of {}.".format(file_name))
         append_success(file_name)
     except subprocess.CalledProcessError as e:
@@ -65,7 +64,7 @@ def download_and_convert_hls_stream(hls_url, file_name):
 def create_new_download_thread(url, file_name, provider) -> Thread:
     logger.debug("Entered Downloader.")
     t = None
-    if provider in ["Vidoza","Streamtape"]:
+    if provider in ["Vidoza", "Streamtape"]:
         t = Thread(target=download, args=(url, file_name))
         t.start()
     elif provider == "VOE":

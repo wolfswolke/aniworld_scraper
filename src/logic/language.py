@@ -40,7 +40,7 @@ def extract_lang_key_mapping(soup):
         # Find all img tags inside the div to extract language and data-lang-key
         lang_elements = change_language_div.find_all("img")
         for lang_element in lang_elements:
-            language = lang_element.get("alt", "") +","+ lang_element.get("title", "")
+            language = lang_element.get("alt", "") + "," + lang_element.get("title", "")
             data_lang_key = lang_element.get("data-lang-key", "")
             if language and data_lang_key:
                 lang_key_mapping[language] = data_lang_key
@@ -66,6 +66,6 @@ def get_href_by_language(html_content, language, provider):
                                 if li_element.find("h4").get_text() == provider), None)
     # Check if any matching elements were found and return the corresponding href
     if matching_li_element:
-        href = matching_li_element.get("data-link-target","")
+        href = matching_li_element.get("data-link-target", "")
         return href
     raise ProviderError(logger.error(f"No matching download found for language '{language}' and provider '{provider}'"))

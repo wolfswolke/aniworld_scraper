@@ -34,6 +34,7 @@ def get_episodes(url_path, season_count):
     logger.debug("Now leaving Function get_episodes")
     return episode_count - 1
 
+
 def get_movies(url_path):
     logger.debug("Entered get_movies")
     url = "{}filme/".format(url_path)
