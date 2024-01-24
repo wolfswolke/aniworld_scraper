@@ -1,13 +1,15 @@
 import os
 import platform
 import subprocess
-import threading
 import time
 from os import path
+from threading import Thread
 
 import requests
 
 from src.custom_logging import setup_logger
+from src.failures import append_failure, remove_file
+from src.successes import append_success
 
 logger = setup_logger(__name__)
 
@@ -30,10 +32,13 @@ def download(link, file_name):
             for chunk in r.iter_content(1024):
                 f.write(chunk)
         if path.getsize(file_name) != 0:
-            logger.info("Finished download of {}.".format(file_name))
+            logger.success("Finished download of {}.".format(file_name))
+            append_success(file_name)
             break
         elif retry_count == 1:
             logger.error("Server error. Could not download {}. Please manly download it later.".format(file_name))
+            append_failure(file_name)
+            remove_file(file_name)
             break
         else:
             logger.info("Download did not complete! File {} will be retryd in a few seconds.".format(file_name))
@@ -49,15 +54,22 @@ def download_and_convert_hls_stream(hls_url, file_name):
             subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
             subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)    
-        logger.info("Finished download of {}.".format(file_name))
+        logger.success("Finished download of {}.".format(file_name))
+        append_success(file_name)
     except subprocess.CalledProcessError as e:
         logger.error("Server error. Could not download {}. Please manly download it later.".format(file_name))
+        append_failure(file_name)
+        remove_file(file_name)
 
 
-def create_new_download_thread(url, file_name, provider):
+def create_new_download_thread(url, file_name, provider) -> Thread:
     logger.debug("Entered Downloader.")
+    t = None
     if provider in ["Vidoza","Streamtape"]:
-        threading.Thread(target=download, args=(url, file_name)).start()
+        t = Thread(target=download, args=(url, file_name))
+        t.start()
     elif provider == "VOE":
-        threading.Thread(target=download_and_convert_hls_stream, args=(url, file_name)).start()
+        t = Thread(target=download_and_convert_hls_stream, args=(url, file_name))
+        t.start()
     logger.info("File {} added to queue.".format(file_name))
+    return t
