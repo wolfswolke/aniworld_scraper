@@ -40,12 +40,12 @@ def get_redirect_link_by_provider(site_url, internal_link, language):
         get_redirect_link(): returns link_to_redirect and provider.
     """
     try:
-        return get_redirect_link(site_url, internal_link, language, "VOE")
+        return get_redirect_link(site_url, internal_link, language, "Streamtape")
     except ProviderError:
         try:
-            return get_redirect_link(site_url, internal_link, language, "Streamtape")
-        except ProviderError:
             return get_redirect_link(site_url, internal_link, language, "Vidoza")
+        except ProviderError:
+            return get_redirect_link(site_url, internal_link, language, "VOE")
 
 
 def get_redirect_link(site_url, html_link, language, provider):
@@ -65,11 +65,11 @@ def find_cache_url(url, provider):
         html_page = urllib.request.urlopen(url)
     except URLError as e:
         logger.warning(f"{e}")
-        logger.info("Trying again...")
+        logger.info("Trying again to read HTML Element...")
         if cache_url_attempts < 5:
             return find_cache_url(url, provider)
         else:
-            logger.error("Could not find cache url for {}.".format(provider))
+            logger.error("Could not find cache url HTML for {}.".format(provider))
             return 0
     try:
         if provider == "Vidoza":
@@ -83,7 +83,8 @@ def find_cache_url(url, provider):
                 return find_cache_url(url, provider)
             cache_link = "https://" + provider + ".com/" + cache_link.group()[:-1]
             logger.debug(f"This is the found video link of {provider}: {cache_link}")
-    except AttributeError:
+    except AttributeError as e:
+        logger.error(f"ERROR: {e}")
         logger.info("Trying again...")
         if cache_url_attempts < 5:
             cache_url_attempts += 1
