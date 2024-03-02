@@ -24,7 +24,7 @@ STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[
 # ------------------------------------------------------- #
 
 
-def get_redirect_link_by_provider(site_url, internal_link, language):
+def get_redirect_link_by_provider(site_url, internal_link, language, provider=None):
     """
     Sets the priority in which downloads are attempted.
     First -> VOE download, if not available...
@@ -39,13 +39,19 @@ def get_redirect_link_by_provider(site_url, internal_link, language):
     Returns:
         get_redirect_link(): returns link_to_redirect and provider.
     """
-    try:
+    if provider == "VOE":
+        return get_redirect_link(site_url, internal_link, language, "VOE")
+    elif provider == "Streamtape":
         return get_redirect_link(site_url, internal_link, language, "Streamtape")
+    elif provider == "Vidoza":
+        return get_redirect_link(site_url, internal_link, language, "Vidoza")
+    try:
+        return get_redirect_link(site_url, internal_link, language, "VOE")
     except ProviderError:
         try:
             return get_redirect_link(site_url, internal_link, language, "Vidoza")
         except ProviderError:
-            return get_redirect_link(site_url, internal_link, language, "VOE")
+            return get_redirect_link(site_url, internal_link, language, "Streamtape")
 
 
 def get_redirect_link(site_url, html_link, language, provider):

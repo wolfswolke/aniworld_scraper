@@ -33,10 +33,13 @@ season_override = parse_cli_arguments(0, 5)  # 0 = no override. 1 = season 1. et
 episode_override = 0  # 0 = no override. 1 = episode 1. etc...
 ddos_protection_calc = 5
 ddos_wait_timer = 180  # in seconds
-output_path = name
+output_root = "output"
+output_name = name
+output_path = "{}/{}".format(output_root, name)
 site_url = {
     "serie": "https://s.to",  # maybe you need another dns to be able to use this site
     "anime": "https://aniworld.to"
 }
+provider_priority = ["VOE", "Vidoza", "Streamtape"]
 
 url = "{}/{}/stream/{}/".format(site_url[type_of_media], type_of_media, name)
