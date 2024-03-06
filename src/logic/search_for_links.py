@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 from src.custom_logging import setup_logger
 from src.logic.language import ProviderError, get_href_by_language
+from src.constants import (provider_priority)
 
 logger = setup_logger(__name__)
 
@@ -19,12 +20,12 @@ cache_url_attempts = 0
 # ------------------------------------------------------- #
 VOE_PATTERN = re.compile(r"'hls': '(?P<url>.+)'")
 STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[^&\'\s]+&token=[^&\'\s]+\'')
+
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
 
-
-def get_redirect_link_by_provider(site_url, internal_link, language, provider=None):
+def get_redirect_link_by_provider(site_url, internal_link, language, provider):
     """
     Sets the priority in which downloads are attempted.
     First -> VOE download, if not available...
@@ -35,23 +36,22 @@ def get_redirect_link_by_provider(site_url, internal_link, language, provider=No
         site_url (String): serie or anime site.
         internal_link (String): link of the html page of the episode.
         language (String): desired language to download the video file in.
+        provider (String): define the provider to use.
 
     Returns:
         get_redirect_link(): returns link_to_redirect and provider.
     """
-    if provider == "VOE":
-        return get_redirect_link(site_url, internal_link, language, "VOE")
-    elif provider == "Streamtape":
-        return get_redirect_link(site_url, internal_link, language, "Streamtape")
-    elif provider == "Vidoza":
-        return get_redirect_link(site_url, internal_link, language, "Vidoza")
+    local_provider_priority = provider_priority.copy()
+    local_provider_priority.remove(provider)
     try:
-        return get_redirect_link(site_url, internal_link, language, "VOE")
+        return get_redirect_link(site_url, internal_link, language, provider)
     except ProviderError:
+        logger.info(f"Provider {provider} failed. Trying {local_provider_priority[0]} next.")
         try:
-            return get_redirect_link(site_url, internal_link, language, "Vidoza")
+            return get_redirect_link(site_url, internal_link, language, local_provider_priority[0])
         except ProviderError:
-            return get_redirect_link(site_url, internal_link, language, "Streamtape")
+            logger.info(f"Provider {local_provider_priority[0]} failed. Trying {local_provider_priority[1]} next.")
+            return get_redirect_link(site_url, internal_link, language, local_provider_priority[1])
 
 
 def get_redirect_link(site_url, html_link, language, provider):

@@ -1,23 +1,30 @@
 import logging
 
+LOADING = 24
 SUCCESS = 25
+logging.addLevelName(LOADING, "LOADING")
 logging.addLevelName(SUCCESS, "SUCCESS")
 
+def loading(self, message, *args, **kwargs):
+    if self.isEnabledFor(LOADING):
+        self._log(LOADING, message, args, **kwargs)
 
 def success(self, message, *args, **kwargs):
     if self.isEnabledFor(SUCCESS):
         self._log(SUCCESS, message, args, **kwargs)
 
 
+logging.Logger.loading = loading
 logging.Logger.success = success
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class CustomFormatter(logging.Formatter):
-    green = "\033[92m"
-    yellow = "\033[93m"
-    blue = "\033[94m"
+    green = "\033[1;92m"
+    yellow = "\033[1;93m"
+    red = "\033[1;31m"
+    blue = "\033[1;94m"
     reset = "\033[0m"
     format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s "
 
@@ -25,8 +32,9 @@ class CustomFormatter(logging.Formatter):
         logging.DEBUG: blue + format + reset,
         logging.INFO: blue + format + reset,
         logging.WARNING: yellow + format + reset,
-        logging.ERROR: format,
-        logging.CRITICAL: format,
+        logging.ERROR: red + format + reset,
+        logging.CRITICAL: red + format + reset,
+        LOADING: yellow + format + reset,
         SUCCESS: green + format + reset,
     }
 
