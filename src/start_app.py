@@ -3,7 +3,7 @@ import time
 
 from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
                            language, name, output_path, season_override,
-                           site_url, type_of_media, url, dlMode, output_root, output_name, provider_priority)
+                           site_url, type_of_media, url, dlMode, cliProvider, output_root, output_name)
 from src.custom_logging import setup_logger
 from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season, get_movies
 from src.logic.downloader import already_downloaded, create_new_download_thread
@@ -15,9 +15,6 @@ from src.successes import write_succs
 
 logger = setup_logger(__name__)
 
-current_provider = "VOE"
-local_provider_priority = provider_priority.copy()
-
 # ------------------------------------------------------- #
 #                       main
 # ------------------------------------------------------- #
@@ -25,8 +22,6 @@ local_provider_priority = provider_priority.copy()
 
 def main():
     ddos_start_value = 0
-    global current_provider
-    global local_provider_priority
 
     logger.info("------------- AnimeSerienScraper {} started ------------".format(APP_VERSION))
 
@@ -102,7 +97,7 @@ def main():
                 if not already_downloaded(file_name):
                     link = url + "filme/film-{}".format(episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, provider=local_provider_priority[0])
+                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:
@@ -115,14 +110,8 @@ def main():
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
                     if cache_url == 0:
-                        local_provider_priority.remove(provider)
-                        if local_provider_priority:
-                            current_provider = local_provider_priority[0]
-                            logger.info(f"Provider {provider} failed. Trying {current_provider} next.")
-                        else:
-                            logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
-                            local_provider_priority = ["VOE", "Vidoza", "Streamtape"]
-                            continue
+                        logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
+                        continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
         elif dlMode.lower() == 'series':
@@ -133,7 +122,7 @@ def main():
                 if not already_downloaded(file_name):
                     link = url + "staffel-{}/episode-{}".format(season, episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, provider=local_provider_priority[0])
+                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:
@@ -146,14 +135,8 @@ def main():
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
                     if cache_url == 0:
-                        local_provider_priority.remove(provider)
-                        if local_provider_priority:
-                            current_provider = local_provider_priority[0]
-                            logger.info(f"Provider {provider} failed. Trying {current_provider} next.")
-                        else:
-                            logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
-                            local_provider_priority = ["VOE", "Vidoza", "Streamtape"]
-                            continue
+                        logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
+                        continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
         else:
@@ -164,7 +147,7 @@ def main():
                 if not already_downloaded(file_name):
                     link = url + "filme/film-{}".format(episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, provider=local_provider_priority[0])
+                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:
@@ -177,14 +160,8 @@ def main():
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
                     if cache_url == 0:
-                        local_provider_priority.remove(provider)
-                        if local_provider_priority:
-                            current_provider = local_provider_priority[0]
-                            logger.info(f"Provider {provider} failed. Trying {current_provider} next.")
-                        else:
-                            logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
-                            local_provider_priority = ["VOE", "Vidoza", "Streamtape"]
-                            continue
+                        logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
+                        continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
             for episode in range(int(episode_count_series)):
@@ -194,7 +171,7 @@ def main():
                 if not already_downloaded(file_name):
                     link = url + "staffel-{}/episode-{}".format(season, episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language)
+                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:

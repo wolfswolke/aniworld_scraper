@@ -70,5 +70,5 @@ def create_new_download_thread(url, file_name, provider) -> Thread:
     elif provider == "VOE":
         t = Thread(target=download_and_convert_hls_stream, args=(url, file_name))
         t.start()
-    logger.info("File {} added to queue.".format(file_name))
+    logger.loading("Provider {} - File {} added to queue.".format(provider, file_name))
     return t
