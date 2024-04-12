@@ -47,8 +47,15 @@ def download(link, file_name):
 
 
 def download_and_convert_hls_stream(hls_url, file_name):
+    if path.exists("ffmpeg.exe"):
+        ffmpeg_path = "ffmpeg.exe"
+    elif path.exists("src/ffmpeg.exe"):
+        ffmpeg_path = "src/ffmpeg.exe"
+    else:
+        ffmpeg_path = "ffmpeg"
+
     try:
-        ffmpeg_cmd = ['ffmpeg', '-i', hls_url, '-c', 'copy', file_name]
+        ffmpeg_cmd = [ffmpeg_path, '-i', hls_url, '-c', 'copy', file_name]
         if platform.system() == "Windows":
             subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
