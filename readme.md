@@ -9,7 +9,7 @@ How to use:
 
 - Clone the Repo
 - `pip install -r requirements.txt`
-- download or install [ffmpeg](https://ffmpeg.org) (If you download it put it in the src folder)
+- download or install [ffmpeg](https://ffmpeg.org) (If you download it put it in the root folder or src folder)
 
 - On Unix for easy use take the _run.sh_ file and edit the desired values
 - On Windows for easy use take the _run.bat_ file and edit the desired values
