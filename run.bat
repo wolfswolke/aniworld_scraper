@@ -18,4 +18,3 @@ rem Season = 0 means all seasons otherwise specify the season you want
 rem Provider = Choose your Provider ["VOE", "Vidoza", "Streamtape"]
 
 python %SCRIPT_PATH% %TYPE% %NAME% %LANGUAGUE% %DLMODE% %SEASON% %PROVIDER%
-```
