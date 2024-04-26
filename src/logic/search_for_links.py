@@ -18,7 +18,8 @@ cache_url_attempts = 0
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-VOE_PATTERN = re.compile(r"'hls': '(?P<url>.+)'")
+VOE_PATTERNS = [re.compile(r"'hls': '(?P<url>.+)'"),
+                re.compile(r'prompt\("Node",\s*"(?P<url>[^"]+)"')]
 STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[^&\'\s]+&token=[^&\'\s]+\'')
 
 # ------------------------------------------------------- #
@@ -82,7 +83,13 @@ def find_cache_url(url, provider):
             soup = BeautifulSoup(html_page, features="html.parser")
             cache_link = soup.find("source").get("src")
         elif provider == "VOE":
-            cache_link = VOE_PATTERN.search(html_page.read().decode('utf-8')).group("url")
+            html_page = html_page.read().decode('utf-8')
+            for VOE_PATTERN in VOE_PATTERNS:
+                cache_link = VOE_PATTERN.search(html_page).group("url")
+                if cache_link and cache_link.startswith("https://"):
+                    return cache_link
+            logger.error("Could not find cache url for {}.".format(provider))
+            return 0
         elif provider == "Streamtape":
             cache_link = STREAMTAPE_PATTERN.search(html_page.read().decode('utf-8'))
             if cache_link is None:
