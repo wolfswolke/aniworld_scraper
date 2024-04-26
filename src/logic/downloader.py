@@ -35,7 +35,7 @@ def download(link, file_name):
             append_success(file_name)
             break
         elif retry_count == 1:
-            logger.error("Server error. Could not download {}. Please manly download it later.".format(file_name))
+            logger.error("Server error. Could not download {}. Please manually download it later.".format(file_name))
             append_failure(file_name)
             remove_file(file_name)
             break
@@ -63,7 +63,7 @@ def download_and_convert_hls_stream(hls_url, file_name):
         logger.success("Finished download of {}.".format(file_name))
         append_success(file_name)
     except subprocess.CalledProcessError as e:
-        logger.error("Server error. Could not download {}. Please manly download it later.".format(file_name))
+        logger.error("Server error. Could not download {}. Please manually download it later.".format(file_name))
         append_failure(file_name)
         remove_file(file_name)
 

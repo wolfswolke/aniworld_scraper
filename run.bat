@@ -10,7 +10,7 @@ set SEASON=0
 set PROVIDER=VOE
 
 rem Script path = File to run
-rem Type = anime or series
+rem Type = anime or serie
 rem Name = Name of the anime or series
 rem Language = Language of the anime or series most common: ["Deutsch","Ger-Sub","English"]
 rem dlMode = Choose your Content ["Movies", "Series", "All"]
