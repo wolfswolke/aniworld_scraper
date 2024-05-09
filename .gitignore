@@ -8,3 +8,5 @@
 /temp/*
 /src/logic/bypass_captcha.py
 /src/extensions/ublock/*
+/output/*
+.DS_Store
