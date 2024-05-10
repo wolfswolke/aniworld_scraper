@@ -154,12 +154,16 @@ echo""
 
 selectionsSeason=(
     "All"
+    "Custom"
     "Quit"
 )
 choose_from_menu "Please select a season:" selectedSeason "${selectionsSeason[@]}"
 case $selectedSeason in
     "All")
         SEASON=0
+        ;;
+    "Custom")
+        read -p "Enter the season number: " SEASON
         ;;
     "Quit")
         exit
