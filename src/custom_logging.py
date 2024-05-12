@@ -1,9 +1,14 @@
 import logging
+import os
 
 LOADING = 24
 SUCCESS = 25
 logging.addLevelName(LOADING, "LOADING")
 logging.addLevelName(SUCCESS, "SUCCESS")
+
+
+if not os.path.exists("logs"):
+    os.mkdir("logs")
 
 def loading(self, message, *args, **kwargs):
     if self.isEnabledFor(LOADING):

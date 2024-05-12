@@ -2,7 +2,7 @@ import os
 from src.custom_logging import setup_logger
 
 logger = setup_logger(__name__)
-filename = "src/failures.txt"
+filename = "logs/failures.log"
 open(filename, "w").close()
 failures = []
 
