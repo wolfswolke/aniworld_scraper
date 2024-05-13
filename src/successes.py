@@ -1,7 +1,7 @@
 from src.custom_logging import setup_logger
 
 logger = setup_logger(__name__)
-filename = "src/successes.txt"
+filename = "logs/successes.log"
 open(filename, "w").close()
 successes = []
 
