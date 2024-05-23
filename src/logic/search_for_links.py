@@ -26,6 +26,27 @@ STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[
 #                      functions
 # ------------------------------------------------------- #
 
+
+def get_year(url):
+    """
+    Get the year of the show.
+
+    Parameters:
+        url (String): url of the show.
+
+    Returns:
+        year (String): year of the show.
+    """
+    try:
+        html_page = urllib.request.urlopen(url)
+        soup = BeautifulSoup(html_page, features="html.parser")
+        year = soup.find("span", {"itemprop": "startDate"}).text
+        return year
+    except AttributeError:
+        logger.error("Could not find year of the show.")
+        return 0
+
+
 def get_redirect_link_by_provider(site_url, internal_link, language, provider):
     """
     Sets the priority in which downloads are attempted.

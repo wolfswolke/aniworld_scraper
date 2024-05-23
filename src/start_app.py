@@ -8,8 +8,7 @@ from src.custom_logging import setup_logger
 from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season, get_movies
 from src.logic.downloader import already_downloaded, create_new_download_thread
 from src.logic.language import LanguageError
-from src.logic.search_for_links import (find_cache_url,
-                                        get_redirect_link_by_provider)
+from src.logic.search_for_links import (find_cache_url, get_redirect_link_by_provider, get_year)
 from src.failures import write_fails
 from src.successes import write_succs
 
@@ -18,7 +17,6 @@ logger = setup_logger(__name__)
 # ------------------------------------------------------- #
 #                       main
 # ------------------------------------------------------- #
-
 
 def main():
     ddos_start_value = 0
@@ -59,6 +57,8 @@ def main():
         logger.info("Season Override detected. Override set to: {}".format(season_override))
         seasons = 1
 
+    year = get_year(url)
+    output_path = f"{output_root}/{type_of_media}/{output_name}_({year})"
     os.makedirs(output_path, exist_ok=True)
 
     threadpool = []
