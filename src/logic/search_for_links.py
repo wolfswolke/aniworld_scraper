@@ -19,7 +19,8 @@ cache_url_attempts = 0
 #                   global variables
 # ------------------------------------------------------- #
 VOE_PATTERNS = [re.compile(r"'hls': '(?P<url>.+)'"),
-                re.compile(r'prompt\("Node",\s*"(?P<url>[^"]+)"')]
+                re.compile(r'prompt\("Node",\s*"(?P<url>[^"]+)"'),
+                re.compile(r"window\.location\.href = '([^']+)'")]
 STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[^&\'\s]+&token=[^&\'\s]+\'')
 
 # ------------------------------------------------------- #
@@ -106,9 +107,14 @@ def find_cache_url(url, provider):
         elif provider == "VOE":
             html_page = html_page.read().decode('utf-8')
             for VOE_PATTERN in VOE_PATTERNS:
-                cache_link = VOE_PATTERN.search(html_page).group("url")
-                if cache_link and cache_link.startswith("https://"):
-                    return cache_link
+                match = VOE_PATTERN.search(html_page)
+                if match:
+                    if match.group(0).startswith("window.location.href"):
+                        logger.info("Found window.location.href. Redirecting...")
+                        return find_cache_url(match.group(1), provider)
+                    cache_link = match.group(1)
+                    if cache_link and cache_link.startswith("https://"):
+                        return cache_link
             logger.error("Could not find cache url for {}.".format(provider))
             return 0
         elif provider == "Streamtape":
