@@ -1,5 +1,6 @@
 import os
 import time
+import subprocess
 
 from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
                            language, name, output_path, season_override,
@@ -13,6 +14,15 @@ from src.failures import write_fails
 from src.successes import write_succs
 
 logger = setup_logger(__name__)
+
+def is_ffmpeg_installed():
+    # Attempt to execute ffmpeg
+    try:
+        result = subprocess.run(['ffmpeg', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return "ffmpeg version" in result.stdout.decode()
+    
+    except FileNotFoundError:
+        return False
 
 # ------------------------------------------------------- #
 #                       main
@@ -44,6 +54,11 @@ def main():
 
     if output_name == "Name-Goes-Here":
         logger.error("Name is Default. Please reade readme before starting.")
+        exit()
+
+    # Check if FFMPEG is installed before even trying to download episodes
+    if not is_ffmpeg_installed():
+        logger.error("FFMPEG is not installed or could not be run. You can download it at https://ffmpeg.org/")
         exit()
 
     if season_override == 0:
