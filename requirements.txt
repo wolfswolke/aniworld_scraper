@@ -1,5 +1,5 @@
 beautifulsoup4==4.12.2
 invoke==2.2.0
-requests==2.31.0
+requests==2.32.2
 selenium==4.15.2
 tqdm==4.66.1
