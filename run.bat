@@ -123,4 +123,4 @@ echo %start_scraper%
 set SCRIPT_PATH=main.py
 python %SCRIPT_PATH% %TYPE% %NAME% %LANGUAGUE% %DLMODE% %SEASON% %PROVIDER%
 echo %finish_scraper%
-exit
+PAUSE
