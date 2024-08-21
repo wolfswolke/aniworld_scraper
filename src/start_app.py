@@ -11,7 +11,7 @@ from src.logic.downloader import already_downloaded, create_new_download_thread
 from src.logic.language import LanguageError
 from src.logic.search_for_links import (find_cache_url, get_redirect_link_by_provider, get_year)
 from src.failures import write_fails
-from src.successes import write_succs
+from src.successes import write_success
 
 logger = setup_logger(__name__)
 
@@ -207,5 +207,5 @@ def main():
         for thread in threadpool:
             thread.join()
 
-        write_succs()
+        write_success()
         write_fails()
