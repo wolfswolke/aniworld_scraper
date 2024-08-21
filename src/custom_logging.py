@@ -29,6 +29,7 @@ class CustomFormatter(logging.Formatter):
     green = "\033[1;92m"
     yellow = "\033[1;93m"
     red = "\033[1;31m"
+    purple = "\033[1;35m"
     blue = "\033[1;94m"
     reset = "\033[0m"
     format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s "
@@ -39,7 +40,7 @@ class CustomFormatter(logging.Formatter):
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
         logging.CRITICAL: red + format + reset,
-        LOADING: yellow + format + reset,
+        LOADING: purple + format + reset,
         SUCCESS: green + format + reset,
     }
 
