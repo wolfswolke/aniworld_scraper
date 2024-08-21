@@ -44,7 +44,9 @@ def extract_lang_key_mapping(soup):
             data_lang_key = lang_element.get("data-lang-key", "")
             if language and data_lang_key:
                 lang_key_mapping[language] = data_lang_key
-    return restructure_dict(lang_key_mapping)
+    ret = restructure_dict(lang_key_mapping)
+    logger.debug(f"Restructured language mapping: {ret}")
+    return ret
 
 
 def get_href_by_language(html_content, language, provider):
