@@ -37,6 +37,6 @@ def write_success():
             os.rename(f"{filename}_old_{j}", f"{filename}_old_{j-1}")
     writer = open(filename, "w")
     for success in successes:
-        writer.write(success)
+        writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {success}")
         writer.write("\n")
     writer.close()

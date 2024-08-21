@@ -35,13 +35,13 @@ def write_fails():
             os.rename(f"{filename}_old_{j}", f"{filename}_old_{j-1}")
     writer = open(filename, "w")
     for failure in failures:
-        writer.write(failure)
+        writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {failure}")
         writer.write("\n")
     writer.close()
 
 
 def remove_file(path):
-    logger.debug("Removing {path}")
+    logger.debug(f"Removing {path}")
     if os.path.exists(path):
         os.remove(path)
         logger.info(f"Removed {path}")
