@@ -4,7 +4,11 @@ import time
 
 logger = setup_logger(__name__)
 filename = "logs/failures.log"
-open(filename, "w").close()
+#open(filename, "w").close()
+if not os.path.exists("logs"):
+    os.mkdir("logs")
+if not os.path.exists(filename):
+    open(filename, "w").close()
 failures = []
 
 

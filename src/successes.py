@@ -5,7 +5,11 @@ from src.custom_logging import setup_logger
 
 logger = setup_logger(__name__)
 filename = "logs/successes.log"
-open(filename, "w").close()
+if not os.path.exists("logs"):
+    os.mkdir("logs")
+if not os.path.exists(filename):
+    open(filename, "w").close()
+# open(filename, "w").close()
 successes = []
 
 
