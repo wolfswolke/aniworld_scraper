@@ -1,10 +1,13 @@
 import os
 import time
 import subprocess
+from threading import active_count
+from time import sleep
 
 from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
                            language, name, output_path, season_override,
-                           site_url, type_of_media, url, dlMode, cliProvider, output_root, output_name)
+                           site_url, type_of_media, url, dlMode, cliProvider, output_root, output_name,
+                           thread_download_wait_timer, max_download_threads, disable_thread_timer)
 from src.custom_logging import setup_logger
 from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season, get_movies
 from src.logic.downloader import already_downloaded, create_new_download_thread
@@ -189,6 +192,8 @@ def main():
                         redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
+                    active_threads = active_count()
+                    logger.debug(f"Active Threads START: {active_threads}")
                     if ddos_start_value < ddos_protection_calc:
                         logger.debug("Entered DDOS var check and starting new downloader.")
                         ddos_start_value += 1
@@ -196,6 +201,14 @@ def main():
                         logger.info("Started {} Downloads. Waiting for {} Seconds to not trigger DDOS"
                                     "Protection.".format(ddos_protection_calc, ddos_wait_timer))
                         time.sleep(ddos_wait_timer)
+                        active_threads = active_count()
+                        if not disable_thread_timer:
+                            while active_threads > max_download_threads:
+                                logger.info(f"Active Threads: {active_threads}. Waiting {thread_download_wait_timer}s "
+                                            f"before checking again if we are under {max_download_threads} threads.")
+                                time.sleep(thread_download_wait_timer)
+                                active_threads = active_count()
+                        logger.debug(f"Resetting DDOS Counter to 1.")
                         ddos_start_value = 1
                     cache_url = find_cache_url(redirect_link, provider)
                     if cache_url == 0:
@@ -203,6 +216,8 @@ def main():
                         continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
+                    active_threads = active_count()
+                    logger.debug(f"Active Threads STARTED: {active_threads}")
 
         for thread in threadpool:
             thread.join()
