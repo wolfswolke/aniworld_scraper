@@ -1,9 +1,18 @@
 import sys
+import re
 
 from src.custom_logging import setup_logger
 
 logger = setup_logger(__name__)
 
+def check_for_old_parse():
+    match sys.argv[1]:
+        case "serie" | "anime":
+            return True
+        case _:
+            return False
+
+use_old_parse = check_for_old_parse()
 
 def parse_cli_arguments(default: str | int, position: int) -> str | int:
     try:
@@ -16,6 +25,30 @@ def parse_cli_arguments(default: str | int, position: int) -> str | int:
         logger.debug(f"no cli argument detected on position:{position}. Using default value:{default}")
         return default
 
+args_pattern = re.compile(
+    r"^("
+    r"(--(?P<HELP>help).*)|"
+    r"((?:-t|--type)\s(?P<TYPE>serie|anime))|"
+    r"((?:-n|--name)\s(?P<NAME>[\w\-]*))|"
+    r"((?:-l|--lang)\s(?P<LANG>Deutsch|Ger-Sub|English))|"
+    r"((?:-m|--dl-mode)\s(?P<MODE>Series|Movies|All))|"
+    r"((?:-s|--season_override)\s(?P<SEASON>\d+))|"
+    r"((?:-p|--provider)\s(?P<PROVIDER>VOE|Streamtape|Vidoza))"
+    r")$"
+)
+
+def args_parse():
+    args_line = " ".join(sys.argv[1:])
+    args: Dict[str, str] = {}
+    if match_object := args_pattern.match(arg_line):
+        args = {k: v for k, v in match_object.groupdict().items()
+                if v is not None}
+    return args
+
+arguments = args_parse() if use_old_parse == False else {}
+
+def get_arg(name: str, default: str | int = None):
+    return arguments.get(name, default)
 
 # ------------------------------------------------------- #
 #                   definitions
@@ -25,12 +58,12 @@ APP_VERSION = "v01-10-00"
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-type_of_media = parse_cli_arguments("anime", 1)  # choose 'serie' or 'anime'
-name = parse_cli_arguments("Name-Goes-Here", 2)
-language = parse_cli_arguments("Deutsch", 3)
-dlMode = parse_cli_arguments("Series", 4)  # Options: Movies, Series, All
-season_override = parse_cli_arguments(0, 5)  # 0 = no override. 1 = season 1. etc...
-cliProvider = parse_cli_arguments("VOE", 6)  # 0 = no override. 1 = season 1. etc...
+type_of_media = parse_cli_arguments("anime", 1) if use_old_parse else get_arg("TYPE", "anime") # choose 'serie' or 'anime'
+name = parse_cli_arguments("Name-Goes-Here", 2) if use_old_parse else get_arg("NAME", "Name-Goes-Here")
+language = parse_cli_arguments("Deutsch", 3) if use_old_parse else get_arg("LANG", "Deutsch")
+dlMode = parse_cli_arguments("Series", 4) if use_old_parse else get_arg("MODE", "Series")  # Options: Movies, Series, All
+season_override = parse_cli_arguments(0, 5) if use_old_parse else get_arg("SEASON", 0)  # 0 = no override. 1 = season 1. etc...
+cliProvider = parse_cli_arguments("VOE", 6) if use_old_parse else get_arg("PROVIDER", "VOE")  # 0 = no override. 1 = season 1. etc...
 episode_override = 0  # 0 = no override. 1 = episode 1. etc...
 ddos_protection_calc = 5
 ddos_wait_timer = 60  # in seconds
