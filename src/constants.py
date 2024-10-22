@@ -38,7 +38,7 @@ args_pattern = re.compile(
 
 def args_parse():
     arg_line = " ".join(sys.argv[1:])
-    args: Dict[str, str] = {}
+    args: dict[str, str] = {}
     if match_objects := args_pattern.finditer(arg_line):
         for match_object in match_objects:
             for item in match_object.groupdict().items():
