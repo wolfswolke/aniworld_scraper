@@ -6,11 +6,10 @@ from src.custom_logging import setup_logger
 logger = setup_logger(__name__)
 
 def check_for_old_parse():
-    match sys.argv[1]:
-        case "serie" | "anime":
-            return True
-        case _:
-            return False
+    if sys.argv[1] == "serie" or sys.argv[1] == "anime":
+        return True
+    else:
+        return False
 
 use_old_parse = check_for_old_parse()
 
@@ -26,23 +25,25 @@ def parse_cli_arguments(default: str | int, position: int) -> str | int:
         return default
 
 args_pattern = re.compile(
-    r"^("
+    r"("
     r"(--(?P<HELP>help).*)|"
     r"((?:-t|--type)\s(?P<TYPE>serie|anime))|"
-    r"((?:-n|--name)\s(?P<NAME>[\w\-]*))|"
+    r"((?:-n|--name)\s(?P<NAME>[\w\-]+))|"
     r"((?:-l|--lang)\s(?P<LANG>Deutsch|Ger-Sub|English))|"
     r"((?:-m|--dl-mode)\s(?P<MODE>Series|Movies|All))|"
     r"((?:-s|--season_override)\s(?P<SEASON>\d+))|"
     r"((?:-p|--provider)\s(?P<PROVIDER>VOE|Streamtape|Vidoza))"
-    r")$"
+    r")"
 )
 
 def args_parse():
-    args_line = " ".join(sys.argv[1:])
+    arg_line = " ".join(sys.argv[1:])
     args: Dict[str, str] = {}
-    if match_object := args_pattern.match(arg_line):
-        args = {k: v for k, v in match_object.groupdict().items()
-                if v is not None}
+    if match_objects := args_pattern.finditer(arg_line):
+        for match_object in match_objects:
+            for item in match_object.groupdict().items():
+                if item[1] != None:
+                    args[item[0]] = item[1]
     return args
 
 arguments = args_parse() if use_old_parse == False else {}
