@@ -111,6 +111,7 @@ def find_cache_url(url, provider):
                 if match:
                     if match.group(0).startswith("window.location.href"):
                         logger.info("Found window.location.href. Redirecting...")
+                        logger.debug(f"Redirecting to {match.group(1)}")
                         return find_cache_url(match.group(1), provider)
                     cache_link = match.group(1)
                     if cache_link and cache_link.startswith("https://"):
