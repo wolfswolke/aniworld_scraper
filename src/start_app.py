@@ -63,10 +63,6 @@ def main():
     if not is_ffmpeg_installed():
         logger.error("FFMPEG is not installed or could not be run. You can download it at https://ffmpeg.org/")
         exit()
-    try:
-        print(season_override)
-    except NameError:
-        print("season_override is not defined")
 
     # if user wants to download all seasons starting from X it would be X+ so 2+ would be 2,3,4...
     if type(season_override) is str:
