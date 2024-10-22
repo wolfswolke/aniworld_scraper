@@ -65,11 +65,11 @@ def main():
         exit()
 
     # if user wants to download all seasons starting from X it would be X+ so 2+ would be 2,3,4...
-    if type(season_override) is str:
+    if "+" in season_override:
         starting_season = int(season_override.replace("+", "")) - 1
         logger.info(f"Starting Season is: {starting_season + 1}")
         seasons = get_season(url)
-    elif type(season_override) is int:
+    else:
         starting_season = 0
         if season_override == 0:
             logger.info("No Season override detected.")
@@ -81,9 +81,6 @@ def main():
         else:
             logger.info("Season Override detected. Override set to: {}".format(season_override))
             seasons = 1
-    else:
-        logger.error("Season Override is not an int or str. Please check your input.")
-        exit()
 
     year = get_year(url)
     output_path = f"{output_root}/{type_of_media}/{output_name}_({year})"
@@ -98,6 +95,7 @@ def main():
             season = season + 1 if season_override == 0 else season_override
         else:
             season = season + 1
+        season = int(season)
         if dlMode.lower() == 'movies':
             season_path_movies = f"{output_path}/Movies"
             os.makedirs(season_path_movies, exist_ok=True)
