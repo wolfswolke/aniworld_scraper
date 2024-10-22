@@ -31,7 +31,7 @@ args_pattern = re.compile(
     r"((?:-n|--name)\s(?P<NAME>[\w\-]+))|"
     r"((?:-l|--lang)\s(?P<LANG>Deutsch|Ger-Sub|English))|"
     r"((?:-m|--dl-mode)\s(?P<MODE>Series|Movies|All))|"
-    r"((?:-s|--season_override)\s(?P<SEASON>\d+))|"
+    r"((?:-s|--season_override)\s(?P<SEASON>\d+\+?))|"
     r"((?:-p|--provider)\s(?P<PROVIDER>VOE|Streamtape|Vidoza))"
     r")"
 )
