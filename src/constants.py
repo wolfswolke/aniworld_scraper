@@ -37,6 +37,7 @@ ddos_wait_timer = 180  # in seconds
 output_root = "output"
 output_name = name
 output_path = f"{output_root}/{type_of_media}/{output_name}"
+download_type_check = "successFile" # real or successFile
 site_url = {
     "serie": "https://s.to",  # maybe you need another dns to be able to use this site
     "anime": "https://aniworld.to"

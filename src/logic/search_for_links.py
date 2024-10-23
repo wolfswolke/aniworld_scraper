@@ -18,12 +18,33 @@ cache_url_attempts = 0
 # ------------------------------------------------------- #
 #                   global variables
 # ------------------------------------------------------- #
-VOE_PATTERN = re.compile(r"'hls': '(?P<url>.+)'")
+VOE_PATTERNS = [re.compile(r"'hls': '(?P<url>.+)'"),
+                re.compile(r'prompt\("Node",\s*"(?P<url>[^"]+)"'),
+                re.compile(r"window\.location\.href = '([^']+)'")]
 STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[^&\'\s]+&token=[^&\'\s]+\'')
 
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
+
+def get_year(url):
+    """
+    Get the year of the show.
+
+    Parameters:
+        url (String): url of the show.
+
+    Returns:
+        year (String): year of the show.
+    """
+    try:
+        html_page = urllib.request.urlopen(url)
+        soup = BeautifulSoup(html_page, features="html.parser")
+        year = soup.find("span", {"itemprop": "startDate"}).text
+        return year
+    except AttributeError:
+        logger.error("Could not find year of the show.")
+        return 0
 
 def get_redirect_link_by_provider(site_url, internal_link, language, provider):
     """
@@ -82,7 +103,18 @@ def find_cache_url(url, provider):
             soup = BeautifulSoup(html_page, features="html.parser")
             cache_link = soup.find("source").get("src")
         elif provider == "VOE":
-            cache_link = VOE_PATTERN.search(html_page.read().decode('utf-8')).group("url")
+            html_page = html_page.read().decode('utf-8')
+            for VOE_PATTERN in VOE_PATTERNS:
+                match = VOE_PATTERN.search(html_page)
+                if match:
+                    if match.group(0).startswith("window.location.href"):
+                        logger.info("Found window.location.href. Redirecting...")
+                        return find_cache_url(match.group(1), provider)
+                    cache_link = match.group(1)
+                    if cache_link and cache_link.startswith("https://"):
+                        return cache_link
+            logger.error("Could not find cache url for {}.".format(provider))
+            return 0
         elif provider == "Streamtape":
             cache_link = STREAMTAPE_PATTERN.search(html_page.read().decode('utf-8'))
             if cache_link is None:

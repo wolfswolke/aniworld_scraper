@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPT_PATH="main.py"
+FAILURE_PATH="failure.py"
 TYPE="anime"
 NAME="Name-Goes-Here"
 LANGUAGE="Deutsch" # most common: ["Deutsch","Ger-Sub","English"]
@@ -8,6 +9,7 @@ SEASON=0 # 0 means all seasons otherwise specify the season you want
 NUM_RUNS=1
 DLMODE="Series"
 PROVIDER="VOE"
+LOAD_TYPE="all" # all, single, only-missed
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -80,6 +82,26 @@ function choose_from_menu() {
     printf "${COLOR_OFF}"
     printf -v $outvar "${options[$cur]}"
 }
+
+selectionsRequest=(
+    "New request"
+    "Try failures again"
+    "Quit"
+)
+choose_from_menu "Please select a your task:" selectedRequest "${selectionsRequest[@]}"
+case $selectedRequest in
+    "New request")
+        ;;
+    "Try failures again")
+        python3 "$FAILURE_PATH" "anime" "test" "Deutsch" "series" "0" "VOE"
+        exit
+        ;;
+    "Quit")
+        exit
+        ;;
+    *) echo "invalid option $REPLY";;
+esac
+echo ""
 
 selectionsType=(
     "Anime"
@@ -154,12 +176,16 @@ echo""
 
 selectionsSeason=(
     "All"
+    "Custom"
     "Quit"
 )
 choose_from_menu "Please select a season:" selectedSeason "${selectionsSeason[@]}"
 case $selectedSeason in
     "All")
         SEASON=0
+        ;;
+    "Custom")
+        read -p "Enter the season number: " SEASON
         ;;
     "Quit")
         exit
