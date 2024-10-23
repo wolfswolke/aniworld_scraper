@@ -51,16 +51,16 @@ def main():
 
     for failure in failures:
         try:
-            pattern = re.compile(r"^\[(?P<utctime>\d+-\d+-\d+T\d+:\d+:\d+.\d+\+\d+:\d+)\]\W(?P<filename>.*\.mp4)(\W-\W\[(?P<params>.*)\])?(\W-\W(?P<link>.*))$")
+            pattern = re.compile(r"\[(?P<utctime>\d+-\d+-\d+T\d+:\d+:\d+.\d+\+\d+:\d+)\]\W(?P<filename>.*\.mp4)(\W-\W\[(?P<matches>.*)\])?(\W-\W(?P<link>.*))")
             utcTime = pattern.search(failure).group('utctime')
-            file_name = pattern.search(failure).group('season')
+            file_name = pattern.search(failure).group('filename')
             matches = pattern.search(failure).group('matches')
+            link = pattern.search(failure).group('link')
         except AttributeError:
             continue
         if not matches:
-            cache_url = pattern.search(failure).group('link')
+            cache_url = link
         else:
-            link = pattern.search(failure).group('link')
             params = matches.split("::")
             site_url = params[0]
             language = params[1]

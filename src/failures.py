@@ -2,8 +2,6 @@ import os
 from src.custom_logging import setup_logger
 from datetime import datetime, timezone 
 
-utcTime = datetime.now(timezone.utc)
-
 logger = setup_logger(__name__)
 failureFilepath = "logs/failures.log"
 if not os.path.exists("logs"):
@@ -36,6 +34,7 @@ def remove_failure(failure):
 
 def append_failure(failure, url):
     logger.info(f"Appended failure {failure}")
+    utcTime = datetime.now(timezone.utc)
     completeFailure = f"[{utcTime.astimezone().isoformat()}] {failure} - {url}"
     # append failure if not already in list
     for fail in failures:

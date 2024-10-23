@@ -3,8 +3,6 @@ from src.custom_logging import setup_logger
 from src.failures import remove_failure
 from datetime import datetime, timezone 
 
-utcTime = datetime.now(timezone.utc)
-
 logger = setup_logger(__name__)
 successFilepath = "logs/successes.log"
 if not os.path.exists("logs"):
@@ -39,7 +37,8 @@ def check_file_downloaded_before(file_name):
 
 def append_success(success):
     logger.debug(f"Appended success {success}")
-    completeSuccess = f"{utcTime.isoformat()}: {success}"
+    utcTime = datetime.now(timezone.utc)
+    completeSuccess = f"[{utcTime.astimezone().isoformat()}] {success}"
     remove_failure(success)
     # append success if not already in list
     for line in successes:
