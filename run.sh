@@ -85,14 +85,14 @@ function choose_from_menu() {
 
 selectionsRequest=(
     "New request"
-    "Try failures again"
+    "Retry"
     "Quit"
 )
 choose_from_menu "Please select a your task:" selectedRequest "${selectionsRequest[@]}"
 case $selectedRequest in
     "New request")
         ;;
-    "Try failures again")
+    "Retry")
         python3 "$FAILURE_PATH" "anime" "test" "Deutsch" "series" "0" "VOE"
         exit
         ;;

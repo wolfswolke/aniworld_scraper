@@ -5,8 +5,8 @@ from threading import active_count
 from time import sleep
 
 from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
-                           language, name, output_path, season_override,
-                           site_url, type_of_media, url, dlMode, cliProvider, output_root, output_name, download_type_check)
+                           language, name, output_path, season_override, useYears,
+                           site_url, type_of_media, url, dlMode, cliProvider, output_root, output_name, file_exists_check)
 from src.custom_logging import setup_logger
 from src.logic.collect_all_seasons_and_episodes import get_episodes, get_season, get_movies
 from src.logic.downloader import already_downloaded, create_new_download_thread, is_ffmpeg_installed
@@ -32,7 +32,7 @@ def is_ffmpeg_installed():
 # ------------------------------------------------------- #
 
 def start_download(file_name, link, episode, season, threadpool, ddos_start_value):
-    if not already_downloaded(file_name, download_type_check):
+    if not already_downloaded(file_name, file_exists_check):
         try:
             redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
         except LanguageError:
@@ -88,11 +88,6 @@ def main():
         logger.error("FFMPEG is not installed or could not be run. You can download it at https://ffmpeg.org/")
         exit()
 
-    # Check if FFMPEG is installed before even trying to download episodes
-    if not is_ffmpeg_installed():
-        logger.error("FFMPEG is not installed or could not be run. You can download it at https://ffmpeg.org/")
-        exit()
-
     if season_override == 0:
         logger.info("No Season override detected.")
         if dlMode.lower() == 'movies':
@@ -105,22 +100,25 @@ def main():
         seasons = 1
 
     year = get_year(url)
-    # output_path = f"{output_root}/{type_of_media}/{output_name}/({year})"
-    os.makedirs(output_path, exist_ok=True)
+    if useYears:
+        download_path = f"{output_path}/{year}"
+    else:
+        download_path = output_path
+    os.makedirs(download_path, exist_ok=True)
 
     threadpool = []
 
     for season in range(int(seasons)):
         season = season + 1 if season_override == 0 else season_override
         if dlMode.lower() == 'movies':
-            season_path_movies = f"{output_path}/Movies"
+            season_path_movies = f"{download_path}/Movies"
             os.makedirs(season_path_movies, exist_ok=True)
         elif dlMode.lower() == 'series':
-            season_path_series = f"{output_path}/Season {season:02}"
+            season_path_series = f"{download_path}/Season {season:02}"
             os.makedirs(season_path_series, exist_ok=True)
         else:
-            season_path_movies = f"{output_path}/Movies"
-            season_path_series = f"{output_path}/Season {season:02}"
+            season_path_movies = f"{download_path}/Movies"
+            season_path_series = f"{download_path}/Season {season:02}"
             os.makedirs(season_path_movies, exist_ok=True)
             os.makedirs(season_path_series, exist_ok=True)
 
@@ -139,7 +137,7 @@ def main():
         if dlMode.lower() == 'movies':
             for episode in range(int(episode_count_movies)):
                 episode = episode + 1
-                file_name = "{}/{}-{}.mp4".format(season_path_movies, name, episode)
+                file_name = "{}/{}-{}-{}.mp4".format(season_path_movies, name, episode, language)
                 logger.info("File name will be: " + file_name)
                 link = url + "filme/film-{}".format(episode)
                 try:
@@ -159,7 +157,7 @@ def main():
         else:
             for episode in range(int(episode_count_movies)):
                 episode = episode + 1
-                file_name = "{}/{}-{}.mp4".format(season_path_movies, name, episode)
+                file_name = "{}/{}-{}-{}.mp4".format(season_path_movies, name, episode, language)
                 logger.info("File name will be: " + file_name)
                 link = url + "filme/film-{}".format(episode)
                 try:

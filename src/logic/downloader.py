@@ -14,8 +14,8 @@ from src.successes import append_success, check_real_file_exists, check_file_dow
 logger = setup_logger(__name__)
 
 
-def already_downloaded(file_name, check_type = "real"):
-    if check_type == "real":
+def already_downloaded(file_name, check_type = True):
+    if check_type:
         return check_real_file_exists(file_name)
     else:
         return check_file_downloaded_before(file_name)

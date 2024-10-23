@@ -31,16 +31,17 @@ language = parse_cli_arguments("Deutsch", 3)
 dlMode = parse_cli_arguments("Series", 4)  # Options: Movies, Series, All
 season_override = parse_cli_arguments(0, 5)  # 0 = no override. 1 = season 1. etc...
 cliProvider = parse_cli_arguments("VOE", 6)  # 0 = no override. 1 = season 1. etc...
+useYears = False
 episode_override = 0  # 0 = no override. 1 = episode 1. etc...
 ddos_protection_calc = 5
 ddos_wait_timer = 60  # in seconds
 max_download_threads = 5 # This does NOT limit the threads but won't start more when the DDOS Timer starts.
 thread_download_wait_timer = 30  # in seconds
 disable_thread_timer = False # If true the script will start downloads as soon as the ddos protection is over.
+file_exists_check = False # real or successFile
 output_root = "output"
 output_name = name
 output_path = f"{output_root}/{type_of_media}/{output_name}"
-download_type_check = "successFile" # real or successFile
 site_url = {
     "serie": "https://s.to",  # maybe you need another dns to be able to use this site
     "anime": "https://aniworld.to"
