@@ -11,3 +11,5 @@
 /src/extensions/ublock/*
 *.7z
 ffmpeg*
+/output/*
+.DS_Store

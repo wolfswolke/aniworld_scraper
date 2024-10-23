@@ -8,7 +8,7 @@ success_file="SUCCESS_OF_REPEAT.SH"
 while true; do
     ${command_to_start_program}
     counter=$((counter+1))
-    if [ ! -s src/failures.txt ];
+    if [ ! -s logs/failures.log ];
     then
         echo ""
         echo ""

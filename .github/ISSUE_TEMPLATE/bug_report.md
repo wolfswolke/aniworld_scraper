@@ -16,7 +16,14 @@ assignees: wolfswolke
 **Expected behavior:**
 
 
-**Screenshots**
+**Screenshots:**
 
 
-**Additional Info**
+**Logs:**
+
+Please set the Log level to DEBUG in src/custom_logging.py
+
+
+logging.basicConfig(level=logging.INFO) -> logging.basicConfig(level=logging.DEBUG)
+
+**Additional Info:**

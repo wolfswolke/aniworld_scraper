@@ -51,19 +51,10 @@ def append_success(success):
     writer.close()
     successes.append(completeSuccess)
 
-def write_succs():
+def write_success():
     logger.debug("Writing successes")
     successes.sort()
     writer = open(successFilepath, "w")
-    for success in successes:
-        writer.write(success)
-        writer.write("\n")
-    writer.close()
-
-def append_write_succs():
-    logger.debug("Append writing successes")
-    successes.sort()
-    writer = open(successFilepath, "a")
     for success in successes:
         writer.write(success)
         writer.write("\n")

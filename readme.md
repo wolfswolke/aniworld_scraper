@@ -9,16 +9,23 @@ How to use:
 
 - Clone the Repo
 - `pip install -r requirements.txt`
-- download or install [ffmpeg](https://ffmpeg.org) (If you download it put it in the src folder)
+- download or install [ffmpeg](https://ffmpeg.org) (If you download it put it in the root folder or src folder)
 
 - On Unix for easy use take the _run.sh_ file and edit the desired values
-- On Windows for easy use take the _run.bat_ file and edit the desired values
+- On Windows for easy use take the _run.bat_ file and past the desired values in the command line
 
+Manual usage with python:
 - Either use arguments or edit the `src/constants.py` file
-- ARGUMENTS: `main.py <TYPE> <NAME> <LANGUAGE> [SeasonOverride]`
+- ARGUMENTS: `main.py <TYPE> <NAME> <LANGUAGE> <DownloadMode> [SeasonOverride] [ProviderOverride]`
 - Change name in `src/constants.py` to your desired name (Format -> see URL of the anime or serie)
-- If you now start the `main.py` a small Chrome window will open everytime it finds an Episode. This is for the Google Captcha!
-- If the Captcha appears please solve it. If you close the window you have to restart the application.
+- If you now start the `main.py` it will start downloading the desired content.
+
+## Manual download
+If you get a error or only need a specific episode you can download it manually with the `Manual_download.py` script.
+
+Run it with the same arguments as you would main.py.
+- Edit the `src/constants.py` and change the `episode_override` to the desired episode.
+- Run `python Manual_download.py <TYPE> <NAME> <LANGUAGE> <DownloadMode> [SeasonOverride] [ProviderOverride]`
 
 ## Values/Overrides
 

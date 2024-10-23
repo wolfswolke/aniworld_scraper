@@ -1,5 +1,8 @@
 import os
 import time
+import subprocess
+from threading import active_count
+from time import sleep
 
 from src.constants import (APP_VERSION, ddos_protection_calc, ddos_wait_timer,
                            language, name, output_path, season_override,
@@ -11,9 +14,18 @@ from src.logic.language import LanguageError
 from src.logic.error import ContinueLoopError
 from src.logic.search_for_links import find_cache_url, get_redirect_link_by_provider, get_year
 from src.failures import write_fails, append_failure
-from src.successes import write_succs
+from src.successes import write_success
 
 logger = setup_logger(__name__)
+
+def is_ffmpeg_installed():
+    # Attempt to execute ffmpeg
+    try:
+        result = subprocess.run(['ffmpeg', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return "ffmpeg version" in result.stdout.decode()
+    
+    except FileNotFoundError:
+        return False
 
 # ------------------------------------------------------- #
 #                       main
@@ -69,6 +81,11 @@ def main():
 
     if output_name == "Name-Goes-Here":
         logger.error("Name is Default. Please reade readme before starting.")
+        exit()
+
+    # Check if FFMPEG is installed before even trying to download episodes
+    if not is_ffmpeg_installed():
+        logger.error("FFMPEG is not installed or could not be run. You can download it at https://ffmpeg.org/")
         exit()
 
     # Check if FFMPEG is installed before even trying to download episodes
@@ -162,5 +179,5 @@ def main():
         for thread in threadpool:
             thread.join()
 
-        write_succs()
+        write_success()
         write_fails()
