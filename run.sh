@@ -8,6 +8,7 @@ LANGUAGE="Deutsch" # most common: ["Deutsch","Ger-Sub","English"]
 SEASON=0 # 0 means all seasons otherwise specify the season you want
 NUM_RUNS=1
 DLMODE="Series"
+SELECTDLMODE="season" # season, movie
 PROVIDER="VOE"
 LOAD_TYPE="all" # all, single, only-missed
 
@@ -132,9 +133,11 @@ choose_from_menu "Please select the download mode:" selectedDlMode "${selections
 case $selectedDlMode in
     "Seasons")
         DLMODE="series"
+        SELECTDLMODE="season"
         ;;
     "Movies")
         DLMODE="movies"
+        SELECTDLMODE="movie"
         ;;
     "Quit")
         exit
@@ -168,29 +171,33 @@ esac
 echo""
 
 echo -e "Type in the name"
-echo -e "example URL: https://aniworld.to/anime/stream/made-in-abyss/staffel-1"
+echo -e "example URL: https://aniworld.to/anime/stream/${Green}made-in-abyss${Color_Off}/staffel-1"
 echo -e "[${Green}made-in-abyss${Color_Off}]"
 read -p " > " NAME
 
 echo""
 
-selectionsSeason=(
-    "All"
-    "Custom"
-    "Quit"
-)
-choose_from_menu "Please select a season:" selectedSeason "${selectionsSeason[@]}"
+if [ "$DLMODE" == "series" ]; then
+    selectionsSeason=('All' $(python3 -m src.logic.cmd.get_seasons "$TYPE" "$NAME" | tr -d "[],'") 'Quit')
+    
+else
+    selectionsSeason=('All' $(python3 -m src.logic.cmd.get_movies "$TYPE" "$NAME" | tr -d "[],'") 'Quit')
+fi
+choose_from_menu "Please select a $SELECTDLMODE:" selectedSeason "${selectionsSeason[@]}"
 case $selectedSeason in
     "All")
         SEASON=0
         ;;
-    "Custom")
-        read -p "Enter the season number: " SEASON
-        ;;
+    # "Custom")
+    #     read -p "Enter the season number: " SEASON
+    #     ;;
     "Quit")
         exit
         ;;
-    *) echo "invalid option $REPLY";;
+    *) 
+        # echo "invalid option $selectedSeason"
+        SEASON=$selectedSeason
+        ;;
 esac
 echo ""
 
