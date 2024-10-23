@@ -9,17 +9,26 @@ import requests
 
 from src.custom_logging import setup_logger
 from src.failures import append_failure, remove_file
-from src.successes import append_success
+from src.successes import append_success, check_real_file_exists, check_file_downloaded_before
 
 logger = setup_logger(__name__)
 
 
-def already_downloaded(file_name):
-    if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
-        logger.info("Episode {} already downloaded.".format(file_name))
-        return True
-    logger.debug("File not downloaded. Downloading: {}".format(file_name))
-    return False
+def already_downloaded(file_name, check_type = True):
+    if check_type:
+        return check_real_file_exists(file_name)
+    else:
+        return check_file_downloaded_before(file_name)
+    
+
+def is_ffmpeg_installed():
+    # Attempt to execute ffmpeg
+    try:
+        result = subprocess.run(['ffmpeg', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return "ffmpeg version" in result.stdout.decode()
+    
+    except FileNotFoundError:
+        return False
 
 
 def download(link, file_name):
@@ -35,8 +44,8 @@ def download(link, file_name):
             append_success(file_name)
             break
         elif retry_count == 1:
-            logger.error("Server error. Could not download {}. Please manually download it later.".format(file_name))
-            append_failure(file_name)
+            logger.error("Server error. Could not download {}. Please manualy download it later.".format(file_name))
+            append_failure(file_name, link)
             remove_file(file_name)
             break
         else:
@@ -53,7 +62,7 @@ def download_and_convert_hls_stream(hls_url, file_name):
         ffmpeg_path = "src/ffmpeg.exe"
     else:
         ffmpeg_path = "ffmpeg"
-
+        
     try:
         ffmpeg_cmd = [ffmpeg_path, '-i', hls_url, '-c', 'copy', file_name]
         if platform.system() == "Windows":
@@ -63,8 +72,8 @@ def download_and_convert_hls_stream(hls_url, file_name):
         logger.success("Finished download of {}.".format(file_name))
         append_success(file_name)
     except subprocess.CalledProcessError as e:
-        logger.error("Server error. Could not download {}. Please manually download it later.".format(file_name))
-        append_failure(file_name)
+        logger.error("Server error. Could not download {}. Please manly download it later.".format(file_name))
+        append_failure(file_name, hls_url)
         remove_file(file_name)
 
 

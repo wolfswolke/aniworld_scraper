@@ -1,5 +1,5 @@
 from src.custom_logging import setup_logger
-from src.start_app import main
+from src.retry_app import main
 
 logger = setup_logger(__name__)
 

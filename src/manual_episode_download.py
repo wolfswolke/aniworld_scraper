@@ -1,6 +1,6 @@
 import os
 
-from src.constants import (episode_override, language, name, output_path,
+from src.constants import (episode_override, language, name, useYears,
                            season_override, type_of_media, url, output_root, output_name, cliProvider)
 from src.custom_logging import setup_logger
 from src.logic.downloader import create_new_download_thread
@@ -30,7 +30,10 @@ def main():
     site_url = {"serie": "https://s.to", "anime": "https://aniworld.to"}
 
     year = get_year(url)
-    output_path = f"{output_root}/{type_of_media}/{output_name}_({year})"
+    if useYears:
+        output_path = f"{output_root}/{type_of_media}/{output_name}/{year}"
+    else:
+        output_path = f"{output_root}/{type_of_media}/{output_name}"
     os.makedirs(output_path, exist_ok=True)
 
     link = anime_url + "staffel-{}/episode-{}".format(season_override, episode_override)
@@ -42,7 +45,7 @@ def main():
     logger.debug("Link to redirect is: " + redirect_link)
     cache_url = find_cache_url(redirect_link, provider)
     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
-    file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(output_path, name, season_override, episode_override, language)
+    file_name = "{}/{}-s{:02}e{:02}-{}.mp4".format(output_path, name, season_override, episode_override, language)
     if os.path.exists(file_name):
         logger.info("Episode {} already downloaded.".format(file_name))
     else:
