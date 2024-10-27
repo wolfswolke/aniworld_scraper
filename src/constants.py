@@ -46,7 +46,7 @@ site_url = {
     "serie": "https://s.to",  # maybe you need another dns to be able to use this site
     "anime": "https://aniworld.to"
 }
-provider_priority = ["VOE", "Vidoza", "Streamtape"]
+provider_priority = ["VOE", "Vidoza", "Streamtape", "Doodstream"]
 
 url = "{}/{}/stream/{}/".format(site_url[type_of_media], type_of_media, name)
 

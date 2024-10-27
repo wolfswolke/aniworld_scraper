@@ -179,7 +179,6 @@ echo""
 
 if [ "$DLMODE" == "series" ]; then
     selectionsSeason=('All' $(python3 -m src.logic.cmd.get_seasons "$TYPE" "$NAME" | tr -d "[],'") 'Quit')
-    
 else
     selectionsSeason=('All' $(python3 -m src.logic.cmd.get_movies "$TYPE" "$NAME" | tr -d "[],'") 'Quit')
 fi
@@ -203,6 +202,7 @@ echo ""
 
 selectionsProvider=(
     "VOE"
+    "Doodstream"
     "Streamtape"
     "Vidoza"
     "Quit"
@@ -211,6 +211,9 @@ choose_from_menu "Please select a provider:" selectedProvider "${selectionsProvi
 case $selectedProvider in
     "VOE")
         PROVIDER="VOE"
+        ;;
+    "Doodstream")
+        PROVIDER="Doodstream"
         ;;
     "Streamtape")
         PROVIDER="Streamtape"

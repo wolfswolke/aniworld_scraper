@@ -2,10 +2,11 @@ import os
 import platform
 import subprocess
 import time
+
 from os import path
 from threading import Thread
-
-import requests
+from requests import get
+from urllib.parse import urlparse
 
 from src.custom_logging import setup_logger
 from src.failures import append_failure, remove_file
@@ -35,7 +36,8 @@ def download(link, file_name):
     retry_count = 0
     while True:
         logger.debug("Entered download with these vars: Link: {}, File_Name: {}".format(link, file_name))
-        r = requests.get(link, stream=True)
+        parsed_url = urlparse(link)
+        r = get(link, headers={'User-Agent': 'Mozilla/5.0', 'Referer': f"{parsed_url.scheme}://{parsed_url.netloc}"}, stream=True)
         with open(file_name, 'wb') as f:
             for chunk in r.iter_content(1024):
                 f.write(chunk)
@@ -80,10 +82,10 @@ def download_and_convert_hls_stream(hls_url, file_name):
 def create_new_download_thread(url, file_name, provider) -> Thread:
     logger.debug("Entered Downloader.")
     t = None
-    if provider in ["Vidoza", "Streamtape"]:
+    if provider in ["Vidoza", "Streamtape", "Doodstream"]:
         t = Thread(target=download, args=(url, file_name))
         t.start()
-    elif provider == "VOE":
+    elif provider in ["VOE"]:
         t = Thread(target=download_and_convert_hls_stream, args=(url, file_name))
         t.start()
     logger.loading("Provider {} - File {} added to queue.".format(provider, file_name))
