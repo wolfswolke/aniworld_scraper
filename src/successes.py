@@ -1,42 +1,61 @@
 import os
-import time
-
 from src.custom_logging import setup_logger
+from src.failures import remove_failure
+from datetime import datetime, timezone 
 
 logger = setup_logger(__name__)
-filename = "logs/successes.log"
+successFilepath = "logs/successes.log"
 if not os.path.exists("logs"):
     os.mkdir("logs")
-if not os.path.exists(filename):
-    open(filename, "w").close()
-# open(filename, "w").close()
+if not os.path.isfile(successFilepath):
+    open(successFilepath, "w").close()
 successes = []
 
+logger.info(f"Loading successes from {successFilepath}")
+writer = open(successFilepath, "r")
+lines = writer.readlines()
+writer.close()
+for line in lines:
+    successes.append(line.strip("\n"))
+
+def check_real_file_exists(file_name):
+    if os.path.isfile(file_name) and os.path.getsize(file_name) > 0:
+        logger.info("Episode {} already downloaded.".format(file_name))
+        return True
+    logger.debug("File not downloaded. Downloading: {}".format(file_name))
+    return False
+
+def check_file_downloaded_before(file_name):
+    if file_name in successes:
+        logger.info(f"File {file_name} was already downloaded before.")
+        return True
+    check = check_real_file_exists(file_name)
+    if check:
+        append_success(file_name)
+        return True
+    return False
 
 def append_success(success):
     logger.debug(f"Appended success {success}")
-    writer = open(filename, "a")
-    writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {success}")
+    utcTime = datetime.now(timezone.utc)
+    completeSuccess = f"[{utcTime.astimezone().isoformat()}] {success}"
+    remove_failure(success)
+    # append success if not already in list
+    for line in successes:
+        if line.find(success) != -1:
+            return   
+    
+    writer = open(successFilepath, "a")
+    writer.write(completeSuccess)
     writer.write("\n")
     writer.close()
-    successes.append(success)
-
+    successes.append(completeSuccess)
 
 def write_success():
     logger.debug("Writing successes")
     successes.sort()
-    if os.path.exists(filename):
-        i = 1
-        while os.path.exists(f"{filename}_old_{i}"):
-            i += 1
-        os.rename(filename, f"{filename}_old_{i}")
-    # if older then 40, remove the oldest and rename the rest
-    if len(successes) > 40:
-        os.remove(f"{filename}_old_{i-40}")
-        for j in range(i-39, i):
-            os.rename(f"{filename}_old_{j}", f"{filename}_old_{j-1}")
-    writer = open(filename, "w")
+    writer = open(successFilepath, "w")
     for success in successes:
-        writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {success}")
+        writer.write(success)
         writer.write("\n")
     writer.close()

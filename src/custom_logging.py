@@ -31,11 +31,12 @@ class CustomFormatter(logging.Formatter):
     red = "\033[1;31m"
     purple = "\033[1;35m"
     blue = "\033[1;94m"
+    white = "\033[1;37m"
     reset = "\033[0m"
     format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s "
 
     FORMATS = {
-        logging.DEBUG: blue + format + reset,
+        logging.DEBUG: white + format + reset,
         logging.INFO: blue + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,

@@ -1,48 +1,72 @@
 import os
 from src.custom_logging import setup_logger
-import time
+from datetime import datetime, timezone 
 
 logger = setup_logger(__name__)
-filename = "logs/failures.log"
-#open(filename, "w").close()
+failureFilepath = "logs/failures.log"
 if not os.path.exists("logs"):
     os.mkdir("logs")
-if not os.path.exists(filename):
-    open(filename, "w").close()
+if not os.path.isfile(failureFilepath):
+    open(failureFilepath, "w").close()    
 failures = []
 
+logger.info(f"Loading failure from {failureFilepath}")
+writer = open(failureFilepath, "r")
+lines = writer.readlines()
+writer.close()
+for line in lines:
+    fail = line.strip('\n')
+    failures.append(fail)
 
-def append_failure(failure):
+def remove_failure(failure):
+    for fail in failures:
+        if fail.find(failure) != -1:
+            logger.info(f"Removing failure from file {failure}")
+            failures.remove(fail)
+            writer = open(failureFilepath, "r")
+            lines = writer.readlines()
+            writer.close()
+            writer = open(failureFilepath, "w") 
+            for line in lines:
+                if line.find(failure) == -1:
+                    writer.write(line)
+            writer.close()
+
+def append_failure(failure, url):
     logger.info(f"Appended failure {failure}")
-    writer = open(filename, "a")
-    writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {failure}")
+    utcTime = datetime.now(timezone.utc)
+    completeFailure = f"[{utcTime.astimezone().isoformat()}] {failure} - {url}"
+    # append failure if not already in list
+    for fail in failures:
+        if fail.find(failure) != -1:
+            return   
+    
+    writer = open(failureFilepath, "a")
+    writer.write(completeFailure)
     writer.write("\n")
     writer.close()
-    failures.append(failure)
-
+    failures.append(completeFailure)
 
 def write_fails():
     logger.debug("Writing failures")
     failures.sort()
-    if os.path.exists(filename):
-        i = 1
-        while os.path.exists(f"{filename}_old_{i}"):
-            i += 1
-        os.rename(filename, f"{filename}_old_{i}")
-    if len(failures) > 40:
-        os.remove(f"{filename}_old_{i-40}")
-        for j in range(i-39, i):
-            os.rename(f"{filename}_old_{j}", f"{filename}_old_{j-1}")
-    writer = open(filename, "w")
+    writer = open(failureFilepath, "w")
     for failure in failures:
-        writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {failure}")
+        writer.write(failure)
         writer.write("\n")
     writer.close()
 
+def remove_file(fileName):
+    logger.debug("Removing {path}")
+    if os.path.isfile(fileName):
+        os.remove(fileName)
+        logger.info(f"Removed {fileName}")
+    else:
+        logger.error(f"Could not remove {fileName}")
 
-def remove_file(path):
-    logger.debug(f"Removing {path}")
-    if os.path.exists(path):
+def remove_path(path):
+    logger.debug("Removing {path}")
+    if os.path.exits(path):
         os.remove(path)
         logger.info(f"Removed {path}")
     else:

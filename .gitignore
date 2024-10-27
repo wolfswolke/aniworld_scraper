@@ -2,11 +2,15 @@
 /test/
 /.idea/
 /logs/
+/output/
 *.zip
 *.log
 *__pycache__
 /temp/*
 /src/logic/bypass_captcha.py
 /src/extensions/ublock/*
+*.7z
+ffmpeg*
 /output/*
 .DS_Store
+test*

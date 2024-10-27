@@ -1,13 +1,16 @@
 #!/bin/bash
 
 SCRIPT_PATH="main.py"
+FAILURE_PATH="failure.py"
 TYPE="anime"
 NAME="Name-Goes-Here"
 LANGUAGE="Deutsch" # most common: ["Deutsch","Ger-Sub","English"]
 SEASON=0 # 0 means all seasons otherwise specify the season you want
 NUM_RUNS=1
 DLMODE="Series"
+SELECTDLMODE="season" # season, movie
 PROVIDER="VOE"
+LOAD_TYPE="all" # all, single, only-missed
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -81,6 +84,26 @@ function choose_from_menu() {
     printf -v $outvar "${options[$cur]}"
 }
 
+selectionsRequest=(
+    "New request"
+    "Retry"
+    "Quit"
+)
+choose_from_menu "Please select a your task:" selectedRequest "${selectionsRequest[@]}"
+case $selectedRequest in
+    "New request")
+        ;;
+    "Retry")
+        python3 "$FAILURE_PATH" "anime" "test" "Deutsch" "series" "0" "VOE"
+        exit
+        ;;
+    "Quit")
+        exit
+        ;;
+    *) echo "invalid option $REPLY";;
+esac
+echo ""
+
 selectionsType=(
     "Anime"
     "TV-show"
@@ -110,9 +133,11 @@ choose_from_menu "Please select the download mode:" selectedDlMode "${selections
 case $selectedDlMode in
     "Seasons")
         DLMODE="series"
+        SELECTDLMODE="season"
         ;;
     "Movies")
         DLMODE="movies"
+        SELECTDLMODE="movie"
         ;;
     "Quit")
         exit
@@ -146,34 +171,38 @@ esac
 echo""
 
 echo -e "Type in the name"
-echo -e "example URL: https://aniworld.to/anime/stream/made-in-abyss/staffel-1"
+echo -e "example URL: https://aniworld.to/anime/stream/${Green}made-in-abyss${Color_Off}/staffel-1"
 echo -e "[${Green}made-in-abyss${Color_Off}]"
 read -p " > " NAME
 
 echo""
 
-selectionsSeason=(
-    "All"
-    "Custom"
-    "Quit"
-)
-choose_from_menu "Please select a season:" selectedSeason "${selectionsSeason[@]}"
+if [ "$DLMODE" == "series" ]; then
+    selectionsSeason=('All' $(python3 -m src.logic.cmd.get_seasons "$TYPE" "$NAME" | tr -d "[],'") 'Quit')
+else
+    selectionsSeason=('All' $(python3 -m src.logic.cmd.get_movies "$TYPE" "$NAME" | tr -d "[],'") 'Quit')
+fi
+choose_from_menu "Please select a $SELECTDLMODE:" selectedSeason "${selectionsSeason[@]}"
 case $selectedSeason in
     "All")
         SEASON=0
         ;;
-    "Custom")
-        read -p "Enter the season number: " SEASON
-        ;;
+    # "Custom")
+    #     read -p "Enter the season number: " SEASON
+    #     ;;
     "Quit")
         exit
         ;;
-    *) echo "invalid option $REPLY";;
+    *) 
+        # echo "invalid option $selectedSeason"
+        SEASON=$selectedSeason
+        ;;
 esac
 echo ""
 
 selectionsProvider=(
     "VOE"
+    "Doodstream"
     "Streamtape"
     "Vidoza"
     "Quit"
@@ -182,6 +211,9 @@ choose_from_menu "Please select a provider:" selectedProvider "${selectionsProvi
 case $selectedProvider in
     "VOE")
         PROVIDER="VOE"
+        ;;
+    "Doodstream")
+        PROVIDER="Doodstream"
         ;;
     "Streamtape")
         PROVIDER="Streamtape"
