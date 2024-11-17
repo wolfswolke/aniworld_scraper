@@ -198,5 +198,5 @@ echo ""
 
 for ((i=1; i<=NUM_RUNS; i++))
 do
-    python3 "$SCRIPT_PATH" "$TYPE" "$NAME" "$LANGUAGE" "$DLMODE" "$SEASON" "$PROVIDER"
+    python3 "$SCRIPT_PATH" --type "$TYPE" --name "$NAME" --lang "$LANGUAGE" --mode "$DLMODE" --season_override "$SEASON" --provider "$PROVIDER"
 done
