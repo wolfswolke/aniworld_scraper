@@ -1,7 +1,7 @@
 @echo off
 cls
 echo Select your Display Language:
-echo Waehle deine anzeige Sprache:
+echo Wähle deine Anzeige-Sprache:
 echo.
 echo 1. English
 echo 2. Deutsch
@@ -35,23 +35,23 @@ goto start
 
 :ger
 set hello_header=Willkommen bei AniWorldScraper!
-set choose_media=Bitte waehle den Medientyp den du herunterladen moechtest:
+set choose_media=Bitte wähle den Medientyp, den du herunterladen möchtest:
 set media_type_anime=1. Anime (Aniworld.to)
 set media_type_series=2. Serie (s.to)
-set media_name=Bitte gebe den Namen des Mediums ein, das du herunterladen moechtest:
-set media_desc=Verwende den genauen Namen wie in der Webseiten URL. (angels-of-death)
-set media_lang=Bitte waehle die Sprache des Mediums, das du herunterladen moechtest:
+set media_name=Bitte gib den Namen des Mediums ein, das du herunterladen möchtest:
+set media_desc=Verwende den genauen Namen wie in der URL der Webseite. (angels-of-death)
+set media_lang=Bitte wähle die Sprache des Mediums, das du herunterladen möchtest:
 set media_choice1=1. Deutsch
 set media_choice2=2. Mit deutschen Untertiteln
 set media_choice3=3. Englisch
-set download_mode=Bitte waehle den Download-Modus:
+set download_mode=Bitte wähle den Download-Modus:
 set download_mode_movies=1. Nur Filme
 set download_mode_series=2. Nur Serien
 set download_mode_all=3. Alle Inhalte
-set season_header=Bitte geben Sie die Staffel ein, die Sie herunterladen moechten:
-set season_desc=Geben Sie 0 fuer alle Staffeln ein.
-set provider_header=Bitte waehlen Sie den Anbieter aus, von dem Sie herunterladen moechten:
-set provider_desc=Standard wert ist VOE
+set season_header=Bitte gib die Staffel ein, die du herunterladen möchtest:
+set season_desc=Gib 0 für alle Staffeln ein.
+set provider_header=Bitte wähle den Anbieter, von dem du herunterladen möchtest:
+set provider_desc=Standardwert ist VOE
 set start_scraper=Scraper wird jetzt gestartet...
 set finish_scraper=Fertig!
 goto start
