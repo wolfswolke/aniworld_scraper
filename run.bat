@@ -1,5 +1,7 @@
 @echo off
+chcp 1252 >nul
 cls
+
 echo Select your Display Language:
 echo Wähle deine Anzeige-Sprache:
 echo.
