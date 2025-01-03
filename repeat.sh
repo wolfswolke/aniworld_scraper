@@ -13,13 +13,13 @@ while true; do
         echo ""
         echo ""
         echo ""
-        echo "There were no failures. Stopping the program."
+        echo "There were no errors. Stopping the program."
         echo "Program ran $counter times"
         break
     fi
     echo ""
     echo ""
-    echo "There were Failures. Re-running the program."
+    echo "There were errors. Re-running the program."
     echo ""
 done
 
