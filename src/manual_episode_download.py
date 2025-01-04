@@ -16,7 +16,7 @@ def main():
 
     read_check = os.access('DO_NOT_DELETE.txt', os.R_OK)
     if read_check:
-        logger.debug("We have Read Permission")
+        logger.debug("We have Read Permission.")
     else:
         logger.error("No Read Permission. Please check if you own the Folder and/or have permissions to read.")
         exit()
@@ -48,5 +48,5 @@ def main():
     else:
         logger.info("File not downloaded. Downloading: {}".format(file_name))
         create_new_download_thread(cache_url, file_name, provider)
-    print("Downloads may still be running. Please dont close this Window until its done")
+    print("Downloads may still be running. Please don't close this Window until its done.")
     print("You will know its done once you see your primary prompt string. Example: C:\\XXX or username@hostname:")
