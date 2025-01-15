@@ -1,3 +1,4 @@
+import base64
 import re
 import urllib.request
 from urllib.error import URLError
@@ -20,7 +21,7 @@ cache_url_attempts = 0
 # ------------------------------------------------------- #
 VOE_PATTERNS = [re.compile(r"'hls': '(?P<url>.+)'"),
                 re.compile(r'prompt\("Node",\s*"(?P<url>[^"]+)"'),
-                re.compile(r"window\.location\.href = '([^']+)'")]
+                re.compile(r"window\.location\.href = '(?P<url>[^']+)'")]
 STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[^&\'\s]+&token=[^&\'\s]+\'')
 
 # ------------------------------------------------------- #
@@ -54,6 +55,7 @@ def get_redirect_link_by_provider(site_url, internal_link, language, provider):
     First -> VOE download, if not available...
     Second -> Streamtape download, if not available...
     Third -> Vidoza download
+    Fourth -> SpeedFiles download
 
     Parameters:
         site_url (String): serie or anime site.
@@ -78,8 +80,6 @@ def get_redirect_link_by_provider(site_url, internal_link, language, provider):
 
 
 def get_redirect_link(site_url, html_link, language, provider):
-    # if you encounter issues with captchas use this line below
-    # html_link = open_captcha_window(html_link)
     html_response = urllib.request.urlopen(html_link)
     href_value = get_href_by_language(html_response, language, provider)
     link_to_redirect = site_url + href_value
@@ -104,6 +104,12 @@ def find_cache_url(url, provider):
         if provider == "Vidoza":
             soup = BeautifulSoup(html_page, features="html.parser")
             cache_link = soup.find("source").get("src")
+        elif provider == "SpeedFiles":
+            cache_link = re.search(r'src="([^"]+)"', html_page.read().decode('utf-8')).group(1)
+            logger.debug(f"Link: {cache_link}")
+            if "store_access" in cache_link:
+                logger.info("Found SpeedFiles mp4 Link!")
+                return cache_link
         elif provider == "VOE":
             html_page = html_page.read().decode('utf-8')
             for VOE_PATTERN in VOE_PATTERNS:
@@ -114,6 +120,7 @@ def find_cache_url(url, provider):
                         logger.debug(f"Redirecting to {match.group(1)}")
                         return find_cache_url(match.group(1), provider)
                     cache_link = match.group(1)
+                    cache_link = base64.b64decode(cache_link).decode('utf-8')
                     if cache_link and cache_link.startswith("https://"):
                         return cache_link
             logger.error("Could not find cache url for {}.".format(provider))
