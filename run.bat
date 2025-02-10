@@ -123,6 +123,6 @@ echo.
 echo %start_scraper%
 
 set SCRIPT_PATH=main.py
-python %SCRIPT_PATH% --type %TYPE% --name %NAME% --lang %LANGUAGUE% --mode %DLMODE% --season_override %SEASON% --provider %PROVIDER%
+python %SCRIPT_PATH% --type %TYPE% --name %NAME% --lang %LANGUAGUE% --dl-mode %DLMODE% --season-override %SEASON% --provider %PROVIDER%
 echo %finish_scraper%
 PAUSE
