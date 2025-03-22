@@ -38,6 +38,10 @@ def write_fails():
         writer.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {failure}")
         writer.write("\n")
     writer.close()
+    if len(failures) > 0:
+        return True
+    else:
+        return False
 
 
 def remove_file(path):

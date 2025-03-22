@@ -237,4 +237,10 @@ def main():
             thread.join()
 
         write_success()
-        write_fails()
+        failed = write_fails()
+        if failed:
+            logger.error("Some Episodes failed to download. Please check the log for more information.")
+            exit(2)
+        else:
+            logger.info("All Episodes downloaded successfully.")
+            exit(0)
