@@ -40,6 +40,10 @@ def get_movies(url_path):
     url = "{}filme/".format(url_path)
     movie_count = 1
     html_page = urllib.request.urlopen(url, timeout=50)
+    raw = html_page.read()
+    if raw == b'':
+        logger.warning("This Anime does not have any movies.")
+        return 0
     soup = BeautifulSoup(html_page, features="html.parser")
     for link in soup.findAll('a'):
         movie = str(link.get("href"))
