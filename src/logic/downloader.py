@@ -55,11 +55,16 @@ def download_and_convert_hls_stream(hls_url, file_name):
         ffmpeg_path = "ffmpeg"
 
     try:
-        ffmpeg_cmd = [ffmpeg_path, '-i', hls_url, '-c', 'copy', file_name]
+        tmp_file_name = file_name.replace(".mp4", "_tmp.mp4")
+        if path.exists(tmp_file_name):
+            os.remove(tmp_file_name)
+            logger.info("Found broken download. Removed {}.".format(tmp_file_name))
+        ffmpeg_cmd = [ffmpeg_path, '-i', hls_url, '-c', 'copy', tmp_file_name]
         if platform.system() == "Windows":
             subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
             subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        os.rename(tmp_file_name, file_name)
         logger.success("Finished download of {}.".format(file_name))
         append_success(file_name)
     except subprocess.CalledProcessError as e:
