@@ -1,10 +1,12 @@
+import datetime
 import os
 import time
 
 from src.custom_logging import setup_logger
 
 logger = setup_logger(__name__)
-filename = "logs/successes.log"
+date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+filename = f"logs/{date_str}successes.log"
 if not os.path.exists("logs"):
     os.mkdir("logs")
 if not os.path.exists(filename):
