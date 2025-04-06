@@ -1,4 +1,5 @@
 import base64
+import json
 import re
 import urllib.request
 from urllib.error import URLError
@@ -112,6 +113,18 @@ def find_cache_url(url, provider):
                 return cache_link
         elif provider == "VOE":
             html_page = html_page.read().decode('utf-8')
+            # new Version of VOE uses a b64 encoded block which is also backwards.
+            try:
+                b64_match = re.search(r"var a168c='([^']+)'", html_page)
+                if b64_match:
+                    logger.debug("Found b64 encoded block. Decoding...")
+                    html_page = base64.b64decode(b64_match.group(1)).decode('utf-8')[::-1]
+                    html_page = json.loads(html_page)
+                    html_page = html_page["source"]
+                    return html_page
+
+            except AttributeError:
+                logger.info("Could not find b64 encoded block. Older VOE Version")
             for VOE_PATTERN in VOE_PATTERNS:
                 match = VOE_PATTERN.search(html_page)
                 if match:
