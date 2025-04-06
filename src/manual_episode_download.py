@@ -26,7 +26,9 @@ def main():
     else:
         logger.error("No Write Permission. Please check if you own the Folder and/or have permissions to write.")
         exit()
-
+    if episode_override == 0:
+        logger.error("Please provide an episode number to download. CONSTANTS.py: episode_override = 0")
+        exit()
     site_url = {"serie": "https://s.to", "anime": "https://aniworld.to"}
 
     year = get_year(url)

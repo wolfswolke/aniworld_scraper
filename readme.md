@@ -37,7 +37,7 @@ If errors occur or only specific episodes are needed, use the `Manual_download.p
 1. Edit `src/constants.py` and set `episode_override` to the desired episode.
 2. Run the script:
    ```bash
-   python Manual_download.py <TYPE> <NAME> <LANGUAGE> <DownloadMode> [SeasonOverride] [ProviderOverride]
+   python Manual_download.py --type <TYPE> --name <NAME> --lang <LANGUAGE> --season-override <SeasonOverride>
    ```
 
 ## Configuration Values
