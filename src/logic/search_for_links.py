@@ -28,7 +28,70 @@ STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
+# --------------------------------------------------------#
+#         NEW VOE DEOBFUSCATION FUNCTION 2025-04-15       #
+# --------------------------------------------------------#
+def deb_func1(input_string):
+    result = ''
+    for char in input_string:
+        char_code = ord(char)
+        if 0x41 <= char_code <= 0x5a:
+            char_code = (char_code - 0x41 + 0xd) % 0x1a + 0x41
+        elif 0x61 <= char_code <= 0x7a:
+            char_code = (char_code - 0x61 + 0xd) % 0x1a + 0x61
+        result += chr(char_code)
+    return result
 
+def regex_func(input_string):
+    patterns = ['@$', '^^', '~@', '%?', '*~', '!!', '#&']
+    for pattern in patterns:
+        regex_pattern = re.compile(re.escape(pattern))
+        input_string = regex_pattern.sub('_', input_string)
+    return input_string
+
+def deb_func3(input_string, shift):
+    result = []
+    for char in input_string:
+        result.append(chr(ord(char) - shift))
+    return ''.join(result)
+
+def deb_func(input_var):
+    math_output = deb_func1(input_var)
+    regexed_string = regex_func(math_output)
+    cleaned_string = regexed_string.replace('_', '')
+    b64_string1 = base64.b64decode(cleaned_string).decode('utf-8')
+    decoded_string = deb_func3(b64_string1, 3)
+    reversed_string = decoded_string[::-1]
+    b64_string2 = base64.b64decode(reversed_string).decode('utf-8')
+    try:
+        output = json.loads(b64_string2)
+    except json.JSONDecodeError as error_string:
+        print("JSON parse error:", error_string)
+        output = {}
+    return output
+
+def find_script_element(raw_html):
+    soup = BeautifulSoup(raw_html, features="html.parser")
+    script_object = soup.find_all("script")
+    obfuscated_string = ""
+    for script in script_object:
+        script = str(script)
+        if script.startswith("<script>(function () {var KGMAaM="):
+            obfuscated_string = script
+            break
+    if obfuscated_string == "":
+        return None
+    try:
+        obfuscated_string = obfuscated_string.split('MKGMa="')[1]
+    except ValueError:
+        logger.warning(f"Did not find MKGMA Key. If finding cache url fails open a issue.")
+        return None
+    obfuscated_string = obfuscated_string.split('"')[0]
+    output = deb_func(obfuscated_string)
+    return output["source"]
+# --------------------------------------------------------#
+#       NEW VOE DEOBFUSCATION FUNCTION 2025-04-15 END     #
+# --------------------------------------------------------#
 
 def get_year(url):
     """
@@ -113,6 +176,13 @@ def find_cache_url(url, provider):
                 return cache_link
         elif provider == "VOE":
             html_page = html_page.read().decode('utf-8')
+            ## New Version of VOE 2025-04-15
+            cache_url = find_script_element(html_page)
+            if cache_url:
+                return cache_url
+            else:
+                logger.info(f"Older VOE page. Trying a different methode...")
+            ##
             # new Version of VOE uses a b64 encoded block which is also backwards.
             try:
                 b64_match = re.search(r"var a168c='([^']+)'", html_page)
@@ -122,9 +192,9 @@ def find_cache_url(url, provider):
                     html_page = json.loads(html_page)
                     html_page = html_page["source"]
                     return html_page
-
             except AttributeError:
                 logger.info("Could not find b64 encoded block. Older VOE Version")
+            #
             for VOE_PATTERN in VOE_PATTERNS:
                 match = VOE_PATTERN.search(html_page)
                 if match:
