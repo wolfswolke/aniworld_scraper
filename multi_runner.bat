@@ -33,9 +33,6 @@ if %DLMODE%==2 set DLMODE=Series
 if %DLMODE%==3 set DLMODE=All
 cls
 
-set /p SEASON=Season:
-cls
-
 echo.
 echo Choose a provider:
 echo 1. VOE 2. Vidoza 3. Streamtape
@@ -50,7 +47,7 @@ echo Enter a list of names separated by spaces. Example: "name1 name2 name3"
 set /p NAMES=Names:
 for %%N in (%NAMES%) do (
     rem run the script with the current name
-    python %SCRIPT_PATH% %TYPE% %%N %LANGUAGE% %DLMODE% %SEASON% %PROVIDER%
+    python %SCRIPT_PATH% --type %TYPE% --name %%N --lang %LANGUAGE% --dl-mode %DLMODE% --provider %PROVIDER%
 )
 echo Done!
 pause
