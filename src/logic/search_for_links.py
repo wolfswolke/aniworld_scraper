@@ -76,7 +76,7 @@ def find_script_element(raw_html):
     obfuscated_string = ""
     for script in script_object:
         script = str(script)
-        if script.startswith("<script>(function () {var KGMAaM="):
+        if "KGMAaM=" in script:
             obfuscated_string = script
             break
     if obfuscated_string == "":
