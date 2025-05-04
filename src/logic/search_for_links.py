@@ -70,18 +70,27 @@ def deb_func(input_var):
         output = {}
     return output
 
-def find_script_element(raw_html):
+def find_script_element(raw_html, sixee=False):
     soup = BeautifulSoup(raw_html, features="html.parser")
     script_object = soup.find_all("script")
     obfuscated_string = ""
+    logger.debug(f"Found {len(script_object)} scripts.")
     for script in script_object:
         script = str(script)
-        if "KGMAaM=" in script:
-            obfuscated_string = script
-            break
+        if sixee:
+            if "window.a4a0bed75f98d40bc80cc" in script:
+                print("Found 6EE script.")
+                obfuscated_string = script
+                break
+        else:
+            if "KGMAaM=" in script:
+                obfuscated_string = script
+                break
     if obfuscated_string == "":
         return None
     try:
+        if sixee:
+            return obfuscated_string
         obfuscated_string = obfuscated_string.split('MKGMa="')[1]
     except ValueError:
         logger.warning(f"Did not find MKGMA Key. If finding cache url fails open a issue.")
@@ -157,6 +166,9 @@ def find_cache_url(url, provider):
     try:
         html_page = urllib.request.urlopen(url)
     except URLError as e:
+        if "11004" in str(e):
+            logger.error("DNS Error. Please check your DNS settings.")
+            return 0
         logger.warning(f"{e}")
         logger.info("Trying again to read HTML Element...")
         if cache_url_attempts < 5:
@@ -176,6 +188,22 @@ def find_cache_url(url, provider):
                 return cache_link
         elif provider == "VOE":
             html_page = html_page.read().decode('utf-8')
+            # 6ee Functions 2025-05-04
+            logger.info("Trying 6EE Voe deobfuscation...")
+            script = find_script_element(raw_html=html_page, sixee=True)
+            if script:
+                logger.info("Found 6EE script. Decoding...")
+                # Script has a lot of \n. Removing all of them.
+                script = script.replace("\\n", "")
+                # Matching to V774 function
+                pattern = r'function\s+V744\s*\(\s*\)\s*{\s*return\s+"([^"]+)"\s*;\s*}'
+                match = re.search(pattern, script, re.DOTALL)
+                logger.debug(f"Found V744 function: {match.group(1)}")
+                # Now time to decrypt 1317 lines of self modifying js...
+                exit(99)
+            else:
+                logger.info("Could not find 6EE script. Trying ROT method...")
+
             ## New Version of VOE 2025-04-15
             cache_url = find_script_element(html_page)
             if cache_url:
@@ -194,7 +222,7 @@ def find_cache_url(url, provider):
                     return html_page
             except AttributeError:
                 logger.info("Could not find b64 encoded block. Older VOE Version")
-            #
+
             for VOE_PATTERN in VOE_PATTERNS:
                 match = VOE_PATTERN.search(html_page)
                 if match:
