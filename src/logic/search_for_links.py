@@ -29,77 +29,113 @@ STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[
 #                      functions
 # ------------------------------------------------------- #
 # --------------------------------------------------------#
-#         NEW VOE DEOBFUSCATION FUNCTION 2025-04-15       #
+#       NEW VOE DEOBFUSCATION FUNCTION 2025-05-01         #
 # --------------------------------------------------------#
-def deb_func1(input_string):
-    result = ''
-    for char in input_string:
-        char_code = ord(char)
-        if 0x41 <= char_code <= 0x5a:
-            char_code = (char_code - 0x41 + 0xd) % 0x1a + 0x41
-        elif 0x61 <= char_code <= 0x7a:
-            char_code = (char_code - 0x61 + 0xd) % 0x1a + 0x61
-        result += chr(char_code)
-    return result
 
-def regex_func(input_string):
-    patterns = ['@$', '^^', '~@', '%?', '*~', '!!', '#&']
-    for pattern in patterns:
-        regex_pattern = re.compile(re.escape(pattern))
-        input_string = regex_pattern.sub('_', input_string)
-    return input_string
-
-def deb_func3(input_string, shift):
-    result = []
-    for char in input_string:
-        result.append(chr(ord(char) - shift))
-    return ''.join(result)
-
-def deb_func(input_var):
-    math_output = deb_func1(input_var)
-    regexed_string = regex_func(math_output)
-    cleaned_string = regexed_string.replace('_', '')
-    b64_string1 = base64.b64decode(cleaned_string).decode('utf-8')
-    decoded_string = deb_func3(b64_string1, 3)
-    reversed_string = decoded_string[::-1]
-    b64_string2 = base64.b64decode(reversed_string).decode('utf-8')
-    try:
-        output = json.loads(b64_string2)
-    except json.JSONDecodeError as error_string:
-        print("JSON parse error:", error_string)
-        output = {}
-    return output
-
-def find_script_element(raw_html, sixee=False):
+def find_script_element_voenew(raw_html):
     soup = BeautifulSoup(raw_html, features="html.parser")
-    script_object = soup.find_all("script")
-    obfuscated_string = ""
-    logger.debug(f"Found {len(script_object)} scripts.")
-    for script in script_object:
-        script = str(script)
-        if sixee:
-            if "window.a4a0bed75f98d40bc80cc" in script:
-                print("Found 6EE script.")
-                obfuscated_string = script
-                break
-        else:
-            if "KGMAaM=" in script:
-                obfuscated_string = script
-                break
-    if obfuscated_string == "":
-        return None
-    try:
-        if sixee:
-            return obfuscated_string
-        obfuscated_string = obfuscated_string.split('MKGMa="')[1]
-    except ValueError:
-        logger.warning(f"Did not find MKGMA Key. If finding cache url fails open a issue.")
-        return None
-    obfuscated_string = obfuscated_string.split('"')[0]
-    output = deb_func(obfuscated_string)
-    return output["source"]
+    MKGMa_pattern = r'MKGMa="(.*?)"'
+    match = re.search(MKGMa_pattern, str(soup), re.DOTALL)
+
+    if not match:
+        logger.info("[*] Searching for new MKGMa application/json ...")
+        MKGMa_pattern=r'<script type="application/json">.*\[(.*?)\]</script>'
+        match = re.search(MKGMa_pattern, str(soup), re.DOTALL)
+    if match:
+        raw_MKGMa = match.group(1)
+
+        def rot13_decode(s: str) -> str:
+            result = []
+            for c in s:
+                if 'A' <= c <= 'Z':
+                    result.append(chr((ord(c) - ord('A') + 13) % 26 + ord('A')))
+                elif 'a' <= c <= 'z':
+                    result.append(chr((ord(c) - ord('a') + 13) % 26 + ord('a')))
+                else:
+                    result.append(c)
+            return ''.join(result)
+
+        def shift_characters(s: str, offset: int) -> str:
+            return ''.join(chr(ord(c) - offset) for c in s)
+
+        try:
+            step1 = rot13_decode(raw_MKGMa)
+            step2 = step1.replace('_', '')
+            step3 = base64.b64decode(step2).decode('utf-8')
+            step4 = shift_characters(step3, 3)
+            step5 = step4[::-1]
+
+            decoded = base64.b64decode(step5).decode('utf-8')
+            try:
+                parsed_json = json.loads(decoded)
+
+                if 'direct_access_url' in parsed_json:
+                    source_json = {"mp4": parsed_json['direct_access_url']}
+                    logger.info("[+] Found direct .mp4 URL in JSON.")
+                elif 'source' in parsed_json:
+                    source_json = {"hls": parsed_json['source']}
+                    logger.info("[+] Found fallback .m3u8 URL in JSON.")
+            except json.JSONDecodeError:
+                logger.error("[-] Decoded string is not valid JSON. Attempting fallback regex search...")
+
+                mp4_match = re.search(r'(https?://[^\s"]+\.mp4[^\s"]*)', decoded)
+                m3u8_match = re.search(r'(https?://[^\s"]+\.m3u8[^\s"]*)', decoded)
+
+                if mp4_match:
+                    source_json = {"mp4": mp4_match.group(1)}
+                    logger.info("[+] Found base64 encoded MP4 URL.")
+                elif m3u8_match:
+                    source_json = {"hls": m3u8_match.group(1)}
+                    logger.info("[+] Found base64 encoded HLS (m3u8) URL.")
+        except Exception as e:
+            logger.error(f"[-] Error while decoding MKGMa string: {e}")
+        try:
+            if "mp4" in source_json:
+                link = source_json["mp4"]
+                # Check if the link is base64 encoded
+                if isinstance(link, str) and (link.startswith("eyJ") or re.match(r'^[A-Za-z0-9+/=]+$', link)):
+                    try:
+                        link = base64.b64decode(link).decode("utf-8")
+                        logger.info("[+] Successfully decoded base64 MP4 URL")
+                    except Exception as e:
+                        logger.error(f"[!] Failed to decode base64: {e}")
+
+                # Ensure the link is a complete URL
+                if link.startswith("//"):
+                    link = "https:" + link
+
+                return link
+
+            elif "hls" in source_json:
+                link = source_json["hls"]
+                # Check if the link is base64 encoded
+                if isinstance(link, str) and (link.startswith("eyJ") or re.match(r'^[A-Za-z0-9+/=]+$', link)):
+                    try:
+                        link = base64.b64decode(link).decode("utf-8")
+                        logger.info("[+] Successfully decoded base64 HLS URL")
+                    except Exception as e:
+                        logger.error(f"[!] Failed to decode base64: {e}")
+
+                # Ensure the link is a complete URL
+                if link.startswith("//"):
+                    link = "https:" + link
+
+                return link
+
+            else:
+                logger.error("[!] Could not find downloadable URL. The site might have changed.")
+                logger.error(f"Available keys in source_json: {list(source_json.keys())}")
+                for key, value in source_json.items():
+                    logger.error(f"{key}: {value}")
+        except KeyError as e:
+            logger.error(f"[!] KeyError: {e}")
+            logger.error("[!] Could not find downloadable URL. The site might have changed.")
+            logger.error(f"Available keys in source_json: {list(source_json.keys())}")
+
+    return None
+
 # --------------------------------------------------------#
-#       NEW VOE DEOBFUSCATION FUNCTION 2025-04-15 END     #
+#       NEW VOE DEOBFUSCATION FUNCTION 2025-05-01 END     #
 # --------------------------------------------------------#
 
 def get_year(url):
@@ -188,24 +224,8 @@ def find_cache_url(url, provider):
                 return cache_link
         elif provider == "VOE":
             html_page = html_page.read().decode('utf-8')
-            # 6ee Functions 2025-05-04
-            logger.info("Trying 6EE Voe deobfuscation...")
-            script = find_script_element(raw_html=html_page, sixee=True)
-            if script:
-                logger.info("Found 6EE script. Decoding...")
-                # Script has a lot of \n. Removing all of them.
-                script = script.replace("\\n", "")
-                # Matching to V774 function
-                pattern = r'function\s+V744\s*\(\s*\)\s*{\s*return\s+"([^"]+)"\s*;\s*}'
-                match = re.search(pattern, script, re.DOTALL)
-                logger.debug(f"Found V744 function: {match.group(1)}")
-                # Now time to decrypt 1317 lines of self modifying js...
-                exit(99)
-            else:
-                logger.info("Could not find 6EE script. Trying ROT method...")
-
-            ## New Version of VOE 2025-04-15
-            cache_url = find_script_element(html_page)
+            ## New Version of VOE 2025-05-01
+            cache_url = find_script_element_voenew(html_page)
             if cache_url:
                 return cache_url
             else:
