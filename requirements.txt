@@ -2,3 +2,4 @@ beautifulsoup4>=4.13.4
 requests>=2.32.3
 thefuzz>=0.22.1
 invoke>=2.2.0
+m3u8>=0.10.0
