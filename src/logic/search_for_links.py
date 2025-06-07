@@ -1,8 +1,11 @@
 import base64
 import json
 import re
+import m3u8
+import requests
 import urllib.request
 from urllib.error import URLError
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
@@ -28,6 +31,29 @@ STREAMTAPE_PATTERN = re.compile(r'get_video\?id=[^&\'\s]+&expires=[^&\'\s]+&ip=[
 # ------------------------------------------------------- #
 #                      functions
 # ------------------------------------------------------- #
+# --------------------------------------------------------#
+#       Get highest Quality from Videolist                #
+# --------------------------------------------------------#
+
+
+def get_highest_quality_stream(m3u8_master_url):
+    response = requests.get(m3u8_master_url)
+    response.raise_for_status()
+
+    base_url = m3u8_master_url.rsplit("/", 1)[0] + "/"
+    playlist = m3u8.loads(response.text)
+
+    best_stream = max(
+        playlist.playlists,
+        key=lambda x: x.stream_info.resolution[1] if x.stream_info.resolution else 0
+    )
+
+    best_uri = urljoin(base_url, best_stream.uri)
+    resolution = best_stream.stream_info.resolution  # ex. (1280, 720)
+
+    return best_uri, resolution[1]  # Return URL and Quality
+
+
 # --------------------------------------------------------#
 #       NEW VOE DEOBFUSCATION FUNCTION 2025-05-01         #
 # --------------------------------------------------------#
@@ -68,13 +94,17 @@ def find_script_element_voenew(raw_html):
             decoded = base64.b64decode(step5).decode('utf-8')
             try:
                 parsed_json = json.loads(decoded)
-
-                if 'direct_access_url' in parsed_json:
+                if 'source' in parsed_json:
+                    try:
+                        best_quality_url, res_height = get_highest_quality_stream(parsed_json['source'])
+                        source_json = {"hls": best_quality_url}
+                        logger.info(f"[+] Choosed best Quality {res_height}p in .m3u8")
+                    except Exception as e:
+                        logger.error(f"[!] Error while parsing .m3u8-File: {e}")
+                        source_json = {"hls": parsed_json['source']}  # fallback to master.m3u8
+                elif 'direct_access_url' in parsed_json:
                     source_json = {"mp4": parsed_json['direct_access_url']}
-                    logger.info("[+] Found direct .mp4 URL in JSON.")
-                elif 'source' in parsed_json:
-                    source_json = {"hls": parsed_json['source']}
-                    logger.info("[+] Found fallback .m3u8 URL in JSON.")
+                    logger.info("[+] Found direct .mp4 URL in JSON (no .m3u8 fallback available).")
             except json.JSONDecodeError:
                 logger.error("[-] Decoded string is not valid JSON. Attempting fallback regex search...")
 
