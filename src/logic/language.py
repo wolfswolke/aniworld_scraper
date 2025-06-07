@@ -14,6 +14,7 @@ class LanguageError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
+language_mapping = ["Deutsch", "Ger-Sub", "English"]
 
 def restructure_dict(given_dict):
     new_dict = {}
@@ -52,6 +53,7 @@ def extract_lang_key_mapping(soup):
 def get_href_by_language(html_content, language, provider):
     soup = BeautifulSoup(html_content, "html.parser")
     lang_key_mapping = extract_lang_key_mapping(soup)
+    lang_key_mapping = {k: v for k, v in lang_key_mapping.items() if k in language_mapping}
 
     if not lang_key_mapping:
         raise LanguageError(logger.error("No language mapping found."))
@@ -66,6 +68,9 @@ def get_href_by_language(html_content, language, provider):
         logger.error(f"Invalid language input. Supported languages: {list(lang_key_mapping.keys())}")
         logger.warning(f"Using first language in mapping: {list(lang_key_mapping.keys())[0]}")
         lang_key = list(lang_key_mapping.values())[0]
+        used_lang = list(lang_key_mapping.keys())[0]
+    else:
+        used_lang = language
     # Find all <li> elements with the given data-lang-key value and h4=provider"
     matching_li_elements = soup.find_all("li", {"data-lang-key": lang_key})
     matching_li_element = next((li_element for li_element in matching_li_elements
@@ -73,5 +78,5 @@ def get_href_by_language(html_content, language, provider):
     # Check if any matching elements were found and return the corresponding href
     if matching_li_element:
         href = matching_li_element.get("data-link-target", "")
-        return href
+        return href, used_lang
     raise ProviderError(logger.error(f"No matching download found for language '{language}' and provider '{provider}'"))

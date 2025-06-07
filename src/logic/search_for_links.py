@@ -190,10 +190,10 @@ def get_redirect_link_by_provider(site_url, internal_link, language, provider):
 
 def get_redirect_link(site_url, html_link, language, provider):
     html_response = urllib.request.urlopen(html_link)
-    href_value = get_href_by_language(html_response, language, provider)
+    href_value, lang_key = get_href_by_language(html_response, language, provider)
     link_to_redirect = site_url + href_value
     logger.debug("Link to redirect is: " + link_to_redirect)
-    return link_to_redirect, provider
+    return link_to_redirect, provider, lang_key
      
 
 def find_cache_url(url, provider):

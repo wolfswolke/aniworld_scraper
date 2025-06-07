@@ -37,14 +37,14 @@ def main():
 
     link = anime_url + "staffel-{}/episode-{}".format(season_override, episode_override)
     try:
-        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
+        redirect_link, provider, lang_key = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
     except LanguageError:
         logger.error("Language not found. Please check the language of the show.")
         exit()
     logger.debug("Link to redirect is: " + redirect_link)
     cache_url = find_cache_url(redirect_link, provider)
     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
-    file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(output_path, name, season_override, episode_override, language)
+    file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(output_path, name, season_override, episode_override, lang_key)
     if os.path.exists(file_name):
         logger.info("Episode {} already downloaded.".format(file_name))
     else:

@@ -129,7 +129,7 @@ def main():
                 if not already_downloaded(file_name):
                     link = url + "filme/film-{}".format(episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
+                        redirect_link, provider, lang_key = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:
@@ -150,11 +150,14 @@ def main():
             for episode in range(int(episode_count_series)):
                 episode = episode + 1
                 file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(season_path_series, name, season, episode, language)
-                logger.info("File name will be: " + file_name)
                 if not already_downloaded(file_name):
                     link = url + "staffel-{}/episode-{}".format(season, episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
+                        redirect_link, provider, lang_key = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
+                        if lang_key != language:
+                            logger.debug(f"Language key {lang_key} does not match requested language {language}. "
+                                           f"Using {lang_key} instead in file name.")
+                            file_name = file_name.replace(language, lang_key)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:
@@ -170,16 +173,16 @@ def main():
                         logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
                         continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
+                    logger.info("File name will be: " + file_name)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
         else:
             for episode in range(int(episode_count_movies)):
                 episode = episode + 1
                 file_name = "{}/{}-{}.mp4".format(season_path_movies, name, episode)
-                logger.info("File name will be: " + file_name)
                 if not already_downloaded(file_name):
                     link = url + "filme/film-{}".format(episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
+                        redirect_link, provider, lang_key = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     if ddos_start_value < ddos_protection_calc:
@@ -195,15 +198,19 @@ def main():
                         logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
                         continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
+                    if lang_key != language:
+                        logger.warning(f"Language key {lang_key} does not match requested language {language}. "
+                                       f"Using {lang_key} instead in file name.")
+                        file_name = file_name.replace(language, lang_key)
+                    logger.info("File name will be: " + file_name)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
             for episode in range(int(episode_count_series)):
                 episode = episode + 1
                 file_name = "{}/{} - s{:02}e{:02} - {}.mp4".format(season_path_series, name, season, episode, language)
-                logger.info("File name will be: " + file_name)
                 if not already_downloaded(file_name):
                     link = url + "staffel-{}/episode-{}".format(season, episode)
                     try:
-                        redirect_link, provider = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
+                        redirect_link, provider, lang_key = get_redirect_link_by_provider(site_url[type_of_media], link, language, cliProvider)
                     except LanguageError:
                         continue
                     active_threads = active_count()
@@ -229,6 +236,11 @@ def main():
                         logger.error(f"Could not find cache url for {provider} on {season}, {episode}.")
                         continue
                     logger.debug("{} Cache URL is: ".format(provider) + cache_url)
+                    if lang_key != language:
+                        logger.warning(f"Language key {lang_key} does not match requested language {language}. "
+                                       f"Using {lang_key} instead in file name.")
+                        file_name = file_name.replace(language, lang_key)
+                    logger.info("File name will be: " + file_name)
                     threadpool.append(create_new_download_thread(cache_url, file_name, provider))
                     active_threads = active_count()
                     logger.debug(f"Active Threads STARTED: {active_threads}")
