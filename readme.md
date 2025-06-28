@@ -1,3 +1,12 @@
+# ARCHIVED PROJECT NOTICE
+
+⚠️ This project is no longer maintained.
+Why?
+
+I haven't watched a anime in more then a year and couldn’t find a maintainable way to rebuild this project with a cleaner codebase.
+
+If you find anything useful here, feel free to use it in your own projects.
+
 # Anime/Series Scraper
 
 This tool enables you to scrape and download all seasons and episodes of anime from Aniworld.to or series from SerienStream (S.to).
